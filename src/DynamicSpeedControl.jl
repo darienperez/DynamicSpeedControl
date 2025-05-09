@@ -1,4 +1,3 @@
-
 module DynamicSpeedControl
 # Dynamically load all modules from `src`
 # push!(LOAD_PATH, joinpath(pwd(), "src"))
@@ -12,7 +11,7 @@ using DataFrames
 #using GaussianMixtures
 using Images
 #using ImageCore
-using ImageView
+#using ImageView
 using Interpolations
 #using LinearAlgebra
 import MLJ: predict, Machine, machine, fit!, transform, matrix, table, fitted_params, @load

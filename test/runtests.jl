@@ -6,7 +6,7 @@ using DynamicSpeedControl
     @test isdefined(Main, :DynamicSpeedControl)
 
     # 2) Exports a function called `initialize`
-    @test haskey(names(DynamicSpeedControl, all = true), :initialize)
+    @test :initialize in names(DynamicSpeedControl; all = true)
 
     # 3) That function at least exists and is callable
     @test typeof(DynamicSpeedControl.initialize) <: Function

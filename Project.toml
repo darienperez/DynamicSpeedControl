@@ -1,6 +1,9 @@
 name = "DynamicSpeedControl"
 uuid = "3eb8dc37-7705-47cb-b51d-7227f7899941"
-authors = ["darien "]
+authors = ["Darien Perez Martin"]
+license = "MIT"
+desc = "A Julia package for multivariate statistics and data analysis"
+repository = "https://github.com/JuliaStats/MultivariateStats.jl.git"
 version = "0.1.0"
 
 [deps]

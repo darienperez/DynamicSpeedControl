@@ -10,8 +10,6 @@ using DataFrames
 #using GLMakie
 #using GaussianMixtures
 using Images
-#using ImageCore
-#using ImageView
 using Interpolations
 #using LinearAlgebra
 import MLJ: predict, Machine, machine, fit!, transform, matrix, table, fitted_params, @load

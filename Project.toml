@@ -21,3 +21,7 @@ MultivariateStats = "6f286f6a-111f-5878-ab1e-185364afe411"
 PlotlyJS = "f0f68f2c-4968-5e81-91da-67840de0976a"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+Test = "1.11.0"

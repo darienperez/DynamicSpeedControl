@@ -2,7 +2,7 @@ name = "DynamicSpeedControl"
 uuid = "3eb8dc37-7705-47cb-b51d-7227f7899941"
 authors = ["Darien Perez Martin"]
 license = "MIT"
-desc = "A Julia package for multivariate statistics and data analysis"
+desc = "A Julia package for controlling UAV velocities"
 repository = "https://github.com/JuliaStats/MultivariateStats.jl.git"
 version = "0.1.0"
 

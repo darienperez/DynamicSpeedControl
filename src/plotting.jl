@@ -72,6 +72,11 @@ make_trace(plotfn, params::NamedTuple, xaxis::AbstractString, yaxis::AbstractStr
     return t
 end
 
+make_trace(cs::ClusteredState, k)  = begin
+    transform(cs.pca, cls[k]) |> DataFrame |> 
+    df ->  scatter3d(df, x=:x1, y=:x2, z=:x3, mode="markers", marker=attr(size=2, opacity=0.5))
+end
+
 function plot_data(X;
     xlabel="x label",
     ylabel="y label",

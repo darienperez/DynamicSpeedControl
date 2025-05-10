@@ -141,7 +141,7 @@ end
 
 clusters(cs::ClusteredState, k) = begin
        ls = cs.labels
-       Xs = cs.sampled_features
+       Xs = transform(cs.pca, cs.sampled_features)
        [Xs[ls[k] .== l, :] for l in unique(ls[k])]
 end
 

@@ -70,7 +70,6 @@ ContourGenerator
 include(joinpath(@__DIR__, "main.jl"))
 include(joinpath(@__DIR__, "clusters.jl"))
 include(joinpath(@__DIR__, "raster_processing.jl"))
-include(joinpath(@__DIR__, "evaluation.jl"))
 include(joinpath(@__DIR__, "speed_mapping.jl"))
 include(joinpath(@__DIR__, "trajectory_planning.jl"))
 include(joinpath(@__DIR__, "plotting.jl"))

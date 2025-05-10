@@ -142,7 +142,7 @@ end
 clusters(cs::ClusteredState, k) = begin
        ls = cs.labels
        Xs = cs.sampled_features
-       (Xs[ls[k] .== l] for l in unique(ls))
+       (Xs[ls[k] .== l, :] for l in unique(ls))
 end
 
 

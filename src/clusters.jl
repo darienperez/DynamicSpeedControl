@@ -139,6 +139,13 @@ function cluster(init::Dict, krange; colorspace=:lab)
     clustered
 end
 
+clusters(cs::ClusteredState, k) = begin
+       ls = cs.labels
+       Xs = cs.sampled_features
+       (Xs[ls[k] .== l] for l in unique(ls))
+end
+
+
 # Function to cluster using a Gaussian Mixture Model (GMM)
 function cluster_gmm(init::Dict, krange)
     # Prepare quality metrics storage

@@ -127,10 +127,10 @@ end
 
 function segment(
     cs::ClusteredState,
+    img::Matrix{RGB{N0f8}},
     k::Int;
 )
     # 1) pull out your original image and dims
-    img = cs.init.raster_data.img
     H, W = size(img)
 
     # 2) build the full feature matrix exactly as in _cluster

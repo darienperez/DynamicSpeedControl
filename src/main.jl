@@ -30,7 +30,7 @@ end
 
 function initialize(;path::Union{AbstractString, Nothing}=nothing)
     if isnothing(path)
-        path = "data/rasters/processed/ortho_2_20_2021_uncorrected_6348_NAD83_19N.tif"
+        path = "/Users/darien/Desktop/Academia/Research/UAV Applications/Dr. Jacob's Research/Code/Julia/DynamicSpeedControl/data/rasters/processed/ortho_2_20_2021_uncorrected_6348_NAD83_19N.tif"
     end
     rd = load_raster_data(path)
     pp = PixelProcessor(rd.img, rd.geotransform)

@@ -127,14 +127,15 @@ end
 
 function segment(
     cs::ClusteredState,
-    img::Matrix{RGB{N0f8}},
+    cs_target::ClusteredState,
     k::Int;
 )
     # 1) pull out your original image and dims
+    img = cs_target.init.raster_data.img
     H, W = size(img)
 
     # 2) build the full feature matrix exactly as in _cluster
-    X = cs.features
+    X = cs_target.features
 
     # 3) wrap as a table, then project with the exact PCA machine
     Xtbl = table(X)

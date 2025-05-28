@@ -95,3 +95,14 @@ function visuals(clustered::Dict, flags)
     end
     plots
 end
+
+function seg_workflow()
+    kf_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_01_23.tif"
+    kf2_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_02_06.tif"
+
+    kf_cs = cluster(initialize(path=kf_path), krange=2:10)
+    # kf2_cs = cluster(initialize(path=kf2_path), krange=2:10)
+
+    kf_lmatk2 = segment(kf_cs, kf_cs, 2)
+    # kf2_lmatk2 = segment(kf2_cs, kf2_cs, 2)
+end

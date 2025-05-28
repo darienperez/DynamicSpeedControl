@@ -1,7 +1,7 @@
 
 struct PixelProcessor
     mat_lab::Matrix{Float32}
-    mat_rgb::Matrix{Float32}
+    # mat_rgb::Matrix{Float32}
     coords::Matrix{Float64}
 end
 

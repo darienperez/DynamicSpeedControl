@@ -6,8 +6,8 @@ PixelProcessor(img, gt) = begin
     mat_lab = Float32.(reshape(cv_lab, 3, H*W)')
 
     # RGB features
-    cv_rgb = channelview(img)
-    mat_rgb = Float32.(reshape(cv_rgb, 3, H*W)')
+    # cv_rgb = channelview(img)
+    # mat_rgb = Float32.(reshape(cv_rgb, 3, H*W)')
 
     # Spatial Coordinates
     originX, pixelW, _, originY, _, pixelH = gt
@@ -18,7 +18,7 @@ PixelProcessor(img, gt) = begin
     Ys = repeat(ys, outer=W)     # length H*W
     coords = hcat(Xs, Ys)
 
-    PixelProcessor(mat_lab, mat_rgb, coords)
+    PixelProcessor(mat_lab, coords)
 end
 
 function sample_pp(X::AbstractMatrix; N::Int = 10_000)

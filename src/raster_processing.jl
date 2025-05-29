@@ -69,6 +69,14 @@ function sample_p(path::AbstractString; N::Int = 100)
     end
 end
 
+function sample_p(path::AbstractString)
+    read(path) do ds
+        imgbands = read(ds, (1,2,3))
+        bands = reshape(imgbands, width(ds)*height(ds), 3)
+        return (Float32.(bands), imgbands)
+    end
+end
+
 function load_raster_data(path::AbstractString)
     read(path) do ds
         # 1) Geo-metadata

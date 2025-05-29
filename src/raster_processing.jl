@@ -1,4 +1,4 @@
-PixelProcessor(img, gt) = begin
+function PixelProcessor(img::T, gt::Vector{<:Real}) where {T}
     H, W = size(img)
 
     # Lab features

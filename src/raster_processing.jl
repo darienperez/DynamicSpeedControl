@@ -65,7 +65,7 @@ function sample_p(path::AbstractString; N::Int = 100)
         bands = read(ds, (1,2,3))
         bands = reshape(bands, width(ds)*height(ds), 3)
         X = sample(bands, (N, 3), replace=false)
-        return Float32.(X)
+        return (Float32.(X), bands)
     end
 end
 

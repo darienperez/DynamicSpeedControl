@@ -31,9 +31,9 @@ end
 
 function sample_p(path::AbstractString, blocksize::Int; N::Int=100)
     # rng = MersenneTwister(1)
-    AG.read(path) do ds
-        gt = AG.getgeotransform(ds)
-        W, H = AG.width(ds), AG.height(ds)
+    read(path) do ds
+        gt = getgeotransform(ds)
+        W, H = width(ds), height(ds)
         # generate a 3×N sample for each tile, then pack them all into one big matrix
         samples = (
             begin
@@ -44,7 +44,7 @@ function sample_p(path::AbstractString, blocksize::Int; N::Int=100)
                 ylen = min(blocksize, H - yoff)
 
                 # read, permute and reshape
-                tile = AG.read(ds, (1,2,3), xoff, yoff, xlen, ylen)
+                tile = read(ds, (1,2,3), xoff, yoff, xlen, ylen)
                 tile = Base.PermutedDimsArray(tile, (3,1,2))
                 tile = reshape(tile, 3, xlen*ylen)
                 

@@ -112,7 +112,7 @@ function classify(path::AbstractString; k::Int=2, N::Int=10_000)
 
     # Do PCA and train kmed model
     println("Performing PCA...")
-    pca = PCA(maxoutdims=3)
+    pca = PCA(maxoutdim=3)
     pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
     println("Done!")
 
@@ -127,5 +127,5 @@ function classify(path::AbstractString; k::Int=2, N::Int=10_000)
     labels = transform(kmedmach, pcabands)
     println("Done!")
 
-    labels
+    Int.(labels.refs)
 end

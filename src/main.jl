@@ -101,8 +101,8 @@ function classify(path::AbstractString; k::Int=2, N::Int=10_000)
     kf2_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_02_06.tif"
 
     println("Sampling image and generating feature matrix and bands...")
-    X, bands, imgbands, ds = sample_p(path, N=N)
-    H, W = height(ds), width(ds)
+    X, bands, imgbands = sample_p(path, N=N)
+    H, W = size(imgbands)[1:2]
     println("Done!")
 
     # Standardize
@@ -121,7 +121,7 @@ function classify(path::AbstractString; k::Int=2, N::Int=10_000)
     kmed = KMedoids(k=k)
     kmedmach = machine(kmed, DataFrame(X, [:R, :G, :B])) |> fit!
     println("Done!")
-    
+
     # Apply PCA to bands and predict labels
     println("Appling PCA to bands of full image...")
     pcabands = transform(pcamach, DataFrame(bands, :auto))

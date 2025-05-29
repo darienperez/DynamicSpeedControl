@@ -102,7 +102,7 @@ function classify(path::AbstractString; k::Int=2, N::Int=10_000)
 
     println("Sampling image and generating feature matrix and bands...")
     X, bands, imgbands = sample_p(path, N=N)
-    H, W = size(imgbands)[1:2]
+    W, H = size(imgbands)[1:2]
     println("Done!")
 
     # Standardize

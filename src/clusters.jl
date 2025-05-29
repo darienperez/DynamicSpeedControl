@@ -1,10 +1,10 @@
 # import MLJ: predict
-
 function standardize!(X::AbstractMatrix)
-    for j in 1:(size(X,2))
+    @views for j in 1:(size(X,2))
         col = X[:,j]
         μ, σ = mean(col), std(col)
-        X[:,j] = (col .- μ) ./ σ
+        col .-= μ
+        col ./= σ
     end
     return X
 end

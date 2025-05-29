@@ -120,18 +120,21 @@ function classify(path::AbstractString; k::Int=2, N::Int=10_000)
     println("Training K-Medoids model with k=$k ...")
     kmed = KMedoids(k=k)
     kmedmach = machine(kmed, DataFrame(X, [:R, :G, :B])) |> fit!
-
+    println("Done!")
+    
     # Apply PCA to bands and predict labels
     println("Appling PCA to bands of full image...")
     pcabands = transform(pcamach, DataFrame(bands, :auto))
-    println("predicting labels for full image")
+    println("Calculating distances to medoids for full image")
     dists = transform(kmedmach, pcabands)
     println("Done!")
 
     # Use distances to medoids to generate labels
+    println("Using distances to medoids to generate labels")
     rowmins = argmin(Matrix(dists), dims=2)
     labels = [CI[2] for CI in vec(rowmins)]
     labels = reshape(labels, W, H)
+    println("Done!")
 
     (labels, imgbands)
 end

@@ -96,13 +96,26 @@ function visuals(clustered::Dict, flags)
     plots
 end
 
-function seg_workflow()
+function classify(path::AbstractString; k::Int=2, N::Int=10_000)
     kf_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_01_23.tif"
     kf2_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_02_06.tif"
 
-    kf_cs = cluster(initialize(path=kf_path), krange=2:10)
-    # kf2_cs = cluster(initialize(path=kf2_path), krange=2:10)
+    X, bands = sample_p(path, N=N)
 
-    kf_lmatk2 = segment(kf_cs, kf_cs, 2)
-    # kf2_lmatk2 = segment(kf2_cs, kf2_cs, 2)
+    # Standardize
+    standardize!(X)
+    standardize!(bands)
+
+    # Do PCA and train kmed model
+    pca = PCA(maxoutdims=3)
+    pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
+
+    kmed = KMedoids(k=k)
+    kmedmach = machine(kmed, DataFrame(X, [:R, :G, :B])) |> fit!
+
+    # Apply PCA to bands and predict labels
+    pcabands = transform(pcamach, DataFrame(bands, :auto))
+    labels = transform(kmedmach, pcabands)
+
+    labels
 end

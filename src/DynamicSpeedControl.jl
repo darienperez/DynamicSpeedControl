@@ -27,7 +27,7 @@ export
 # Workflow
 initialize,
 visuals,
-seg_workflow,
+classify,
 InitState,
 UseDict,
 

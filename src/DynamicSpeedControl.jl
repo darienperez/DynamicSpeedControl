@@ -2,8 +2,7 @@ module DynamicSpeedControl
 # Dynamically load all modules from `src`
 # push!(LOAD_PATH, joinpath(pwd(), "src"))
 using Revise
-using ArchGDAL
-const AG = ArchGDAL
+using ArchGDAL: read, height, width, getgeotransform
 using Clustering
 #using ColorTypes 
 using Colors

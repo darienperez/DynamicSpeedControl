@@ -60,15 +60,15 @@ function sample_p(path::AbstractString, blocksize::Int; N::Int=100)
 end
 
 function load_raster_data(path::AbstractString)
-    ArchGDAL.read(path) do ds
+    read(path) do ds
         # 1) Geo-metadata
-        gt = ArchGDAL.getgeotransform(ds)
+        gt = getgeotransform(ds)
         dx, dy = gt[2], gt[6]
 
         # 2) Raw bands
-        b1 = ArchGDAL.read(ArchGDAL.getband(ds,1))
-        b2 = ArchGDAL.read(ArchGDAL.getband(ds,2))
-        b3 = ArchGDAL.read(ArchGDAL.getband(ds,3))
+        b1 = read(ds,1)
+        b2 = read(ds,2)
+        b3 = read(ds,3)
 
         # 3) Build an Images.jl RGB image
         r = N0f8.(b1 ./ 255)

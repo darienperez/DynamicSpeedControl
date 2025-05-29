@@ -29,6 +29,28 @@ function sample_pp(X::AbstractMatrix; N::Int = 10_000)
     X[idx, :]
 end
 
+function sample_p(path::AbstractString, blocksize::Int; N::Int=100)
+    AG.read(path) do ds
+        gt = AG.getgeotransform(ds)
+        W, H = AG.width(ds), AG.height(ds)
+        X = []
+
+        for y in 1:blocksize:H
+            y0 = y - 1
+            ylen = min(blocksize, H - y0)
+            for x in 1:blocksize:W
+                x0 = x - 1
+                xlen = min(blocksize, W - x0)
+
+                tile = ArchGDAL.read(ds, (1,2,3), x0, y0, xlen, ylen) 
+                tile = Base.PermutedDimsArray(tile, (3,1,2))
+                tile = reshape(tile, 3, xlen*ylen)
+                push!(X, sample(Float32.(tile), (3, N), replace=false))
+            end # x loop
+        end # y loop
+        return X
+    end # do block
+end
 
 function load_raster_data(path::AbstractString)
     ArchGDAL.read(path) do ds
@@ -150,3 +172,4 @@ function segment(
 
     return labels_mat
 end
+

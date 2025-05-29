@@ -3,6 +3,7 @@ module DynamicSpeedControl
 # push!(LOAD_PATH, joinpath(pwd(), "src"))
 using Revise
 using ArchGDAL
+const AG = ArchGDAL
 using Clustering
 #using ColorTypes 
 using Colors
@@ -34,6 +35,7 @@ UseDict,
 # RasterProcessing
 PixelProcessor,
 sample_pp,
+sample_p,
 load_raster_data,
 sample_lab_pixels,
 pixel_data,

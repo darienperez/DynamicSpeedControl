@@ -32,7 +32,7 @@ end
 function sample_p(path::AbstractString, blocksize::Int; N::Int=100)
     # rng = MersenneTwister(1)
     read(path) do ds
-        gt = getgeotransform(ds)
+        # gt = getgeotransform(ds)
         W, H = width(ds), height(ds)
         # generate a 3×N sample for each tile, then pack them all into one big matrix
         samples = (
@@ -45,18 +45,28 @@ function sample_p(path::AbstractString, blocksize::Int; N::Int=100)
 
                 # read, permute and reshape
                 tile = read(ds, (1,2,3), xoff, yoff, xlen, ylen)
-                tile = Base.PermutedDimsArray(tile, (3,1,2))
-                tile = reshape(tile, 3, xlen*ylen)
+                # tile = Base.PermutedDimsArray(tile, (3,1,2))
+                tile = reshape(tile, xlen*ylen, 3)
                 
                 # draw N random pixels
-                sample(Float32.(tile), (3, N), replace=false)
+                sample(Float32.(tile), (N, 3), replace=false)
             end
             for y0 in 1:blocksize:H, x0 in 1:blocksize:W
         )
 
         # one single allocation of the final 3×(num_tiles*N) matrix
-        return collect(samples)
+        S = collect(samples)
+        vcat(S...)
     end # do block
+end
+
+function sample_p(path::AbstractString; N::Int = 100)
+    read(path) do ds
+        bands = read(ds, (1,2,3))
+        bands = reshape(bands, width(ds)*height(ds), 3)
+        X = sample(Float32, bands, (N, 3), replace=false)
+        return X
+    end
 end
 
 function load_raster_data(path::AbstractString)

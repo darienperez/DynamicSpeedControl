@@ -101,7 +101,8 @@ function classify(path::AbstractString; k::Int=2, N::Int=10_000)
     kf2_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_02_06.tif"
 
     println("Sampling image and generating feature matrix and bands...")
-    X, bands = sample_p(path, N=N)
+    X, bands, imgbands, ds = sample_p(path, N=N)
+    H, W = height(ds), width(ds)
     println("Done!")
 
     # Standardize
@@ -124,8 +125,13 @@ function classify(path::AbstractString; k::Int=2, N::Int=10_000)
     println("Appling PCA to bands of full image...")
     pcabands = transform(pcamach, DataFrame(bands, :auto))
     println("predicting labels for full image")
-    labels = transform(kmedmach, pcabands)
+    dists = transform(kmedmach, pcabands)
     println("Done!")
 
-    Int.(labels.refs)
+    # Use distances to medoids to generate labels
+    rowmins = argmin(Matrix(dists), dims=2)
+    labels = [CI[2] for CI in vec(rowmins)]
+    labels = reshape(labels, W, H)
+
+    (labels, imgbands)
 end

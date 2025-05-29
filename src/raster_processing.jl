@@ -30,25 +30,32 @@ function sample_pp(X::AbstractMatrix; N::Int = 10_000)
 end
 
 function sample_p(path::AbstractString, blocksize::Int; N::Int=100)
+    # rng = MersenneTwister(1)
     AG.read(path) do ds
         gt = AG.getgeotransform(ds)
         W, H = AG.width(ds), AG.height(ds)
-        X = []
+        # generate a 3×N sample for each tile, then pack them all into one big matrix
+        samples = (
+            begin
+                # compute zero-based window
+                xoff = x0 - 1
+                yoff = y0 - 1
+                xlen = min(blocksize, W - xoff)
+                ylen = min(blocksize, H - yoff)
 
-        for y in 1:blocksize:H
-            y0 = y - 1
-            ylen = min(blocksize, H - y0)
-            for x in 1:blocksize:W
-                x0 = x - 1
-                xlen = min(blocksize, W - x0)
-
-                tile = ArchGDAL.read(ds, (1,2,3), x0, y0, xlen, ylen) 
+                # read, permute and reshape
+                tile = AG.read(ds, (1,2,3), xoff, yoff, xlen, ylen)
                 tile = Base.PermutedDimsArray(tile, (3,1,2))
                 tile = reshape(tile, 3, xlen*ylen)
-                push!(X, sample(Float32.(tile), (3, N), replace=false))
-            end # x loop
-        end # y loop
-        return X
+                
+                # draw N random pixels
+                sample(Float32.(tile), (3, N), replace=false)
+            end
+            for y0 in 1:blocksize:H, x0 in 1:blocksize:W
+        )
+
+        # one single allocation of the final 3×(num_tiles*N) matrix
+        return collect(samples)
     end # do block
 end
 

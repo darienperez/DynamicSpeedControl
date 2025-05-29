@@ -100,22 +100,32 @@ function classify(path::AbstractString; k::Int=2, N::Int=10_000)
     kf_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_01_23.tif"
     kf2_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_02_06.tif"
 
+    println("Sampling image and generating feature matrix and bands...")
     X, bands = sample_p(path, N=N)
+    println("Done!")
 
     # Standardize
+    println("Standardizing feature matrix and bands...")
     standardize!(X)
     standardize!(bands)
+    println("Done!")
 
     # Do PCA and train kmed model
+    println("Performing PCA...")
     pca = PCA(maxoutdims=3)
     pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
+    println("Done!")
 
+    println("Training K-Medoids model with k=$k ...")
     kmed = KMedoids(k=k)
     kmedmach = machine(kmed, DataFrame(X, [:R, :G, :B])) |> fit!
 
     # Apply PCA to bands and predict labels
+    println("Appling PCA to bands of full image...")
     pcabands = transform(pcamach, DataFrame(bands, :auto))
+    println("predicting labels for full image")
     labels = transform(kmedmach, pcabands)
+    println("Done!")
 
     labels
 end

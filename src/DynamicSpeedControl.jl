@@ -38,6 +38,7 @@ load_raster_data,
 sample_lab_pixels,
 segment,
 extract,
+toimg,
 densities,
 
 # Clustering

@@ -98,6 +98,12 @@ function extract(path::AbstractString)
     end
 end
 
+function toimg(imgbands::Array{UInt8, 3})
+    # Convert to Matrix{RGB{N0f8}} and swap view of img dimensions for colorview()
+    img = N0f8.(imgbands./255) |> x -> PermutedDimsArray(x, (3,1,2))
+    colorview(RGB, img) 
+end
+
 # extract(clustered::Dict) = begin
 #     img = clustered[:raster_data].img
 #     M = [clustered[:segs][c].labels_mat for c in keys(clustered[:segs])]

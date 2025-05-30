@@ -165,5 +165,5 @@ function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine)
     labels = reshape(labels, W, H)
     println("Done!")
 
-    (labels, imgbands)
+    (labels=labels, imgbands=imgbands)
 end

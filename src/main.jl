@@ -96,7 +96,7 @@ function visuals(clustered::Dict, flags)
     plots
 end
 
-function classify(path::AbstractString; k::Int=2, N::Int=10_000)
+function classify(path::String; k::Int=2, N::Int=10_000)
     kf_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_01_23.tif"
     kf2_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_02_06.tif"
 
@@ -139,7 +139,7 @@ function classify(path::AbstractString; k::Int=2, N::Int=10_000)
     (labels=labels, imgbands=imgbands, pcamach=pcamach, kmedmach=kmedmach)
 end
 
-function classify(path::AbstractString, pcamach::MLJ.Machine, kmedmach::MLJ.Machine)
+function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine)
 
     println("Extracting image bands...")
     bands, imgbands = extract(path)

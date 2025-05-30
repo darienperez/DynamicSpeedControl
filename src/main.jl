@@ -139,7 +139,7 @@ function classify(path::AbstractString; k::Int=2, N::Int=10_000)
     (labels=labels, imgbands=imgbands, pcamach=pcamach, kmedmach=kmedmach)
 end
 
-function classify(path::AbstractString; k::Int=2, N::Int=10_000)
+function classify(path::AbstractString, pcamach::MLJ.Machine, kmedmach::MLJ.Machine)
 
     println("Extracting image bands...")
     bands, imgbands = extract(path)

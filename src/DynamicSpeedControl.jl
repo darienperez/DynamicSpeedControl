@@ -3,7 +3,7 @@ module DynamicSpeedControl
 # push!(LOAD_PATH, joinpath(pwd(), "src"))
 using Revise
 using ArchGDAL: read, height, width, getgeotransform
-using Clustering
+using Clustering: SqEuclidean, clustering_quality
 #using ColorTypes 
 using Colors: RGB, N0f8
 using DataFrames: DataFrame

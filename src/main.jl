@@ -136,5 +136,34 @@ function classify(path::AbstractString; k::Int=2, N::Int=10_000)
     labels = reshape(labels, W, H)
     println("Done!")
 
+    (labels=labels, imgbands=imgbands, pcamach=pcamach, kmedmach=kmedmach)
+end
+
+function classify(path::AbstractString; k::Int=2, N::Int=10_000)
+
+    println("Extracting image bands...")
+    bands, imgbands = sample_p(path)
+    W, H = size(imgbands)[1:2]
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature bands...")
+    standardize!(bands)
+    println("Done!")
+
+    # Apply PCA to bands and predict labels
+    println("Appling PCA to bands of full image...")
+    pcabands = transform(pcamach, DataFrame(bands, :auto))
+    println("Calculating distances to medoids for full image")
+    dists = transform(kmedmach, pcabands)
+    println("Done!")
+
+    # Use distances to medoids to generate labels
+    println("Using distances to medoids to generate labels")
+    rowmins = argmin(Matrix(dists), dims=2)
+    labels = [CI[2] for CI in vec(rowmins)]
+    labels = reshape(labels, W, H)
+    println("Done!")
+
     (labels, imgbands)
 end

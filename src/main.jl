@@ -96,7 +96,7 @@ function visuals(clustered::Dict, flags)
     plots
 end
 
-function classify(path::String; ks::UnitRange=2:2, N::Int=10_000)
+function classify(path::String; ks::UnitRange=2:2, N::Int=50_000)
     kf_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_01_23.tif"
     kf2_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_02_06.tif"
 

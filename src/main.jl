@@ -117,7 +117,7 @@ function classify(path::String; ks::UnitRange=2:2, N::Int=10_000)
     pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
     println("Done!")
 
-    println("Training K-Medoids model with krange from $(minimum(ks)) to $(maximum(ks))...")
+    println("Training K-Medoids model for k's from $(minimum(ks)) to $(maximum(ks))...")
     kmedmachs = Dict{Int, Machine}()
     for k in ks
         kmed = KMedoids(k=k)

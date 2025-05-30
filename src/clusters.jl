@@ -215,6 +215,27 @@ function evaluate_quality(
     vals
 end
 
+function evaluate_quality(results::NamedTuple;
+                          qualityIdx::Symbol=:dunn,
+                          metric = SqEuclidean())   
+    
+    pcabands = transform(results.pcamach, results.X) |> matrix
+    # indices = Dict{Int, Float64}()
+    # for (k, labels) in cs.labels
+    if qualityIdx in (:calinski_harabasz, :xie_beni, :davies_bouldin)
+        centers = fitted_params(results.kmedmach).medoids
+        index = clustering_quality(
+            pcabands', centers, reshape(results.labels, :); quality_index=qualityIdx, metric=metric
+        )
+    else
+        index = clustering_quality(
+            pcabands', results.labels; quality_index=qualityIdx, metric=metric
+        )
+        end
+    # end
+    index
+end
+
 function ClusterQualities(cs::ClusteredState)
     qs = []
     cqs = fieldnames(ClusterQualities)

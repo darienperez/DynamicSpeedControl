@@ -101,7 +101,7 @@ function classify(path::AbstractString; k::Int=2, N::Int=10_000)
     kf2_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_02_06.tif"
 
     println("Sampling image and generating feature matrix and bands...")
-    X, bands, imgbands = sample_p(path, N=N)
+    X, bands, imgbands = extract(path, N=N)
     W, H = size(imgbands)[1:2]
     println("Done!")
 
@@ -142,7 +142,7 @@ end
 function classify(path::AbstractString; k::Int=2, N::Int=10_000)
 
     println("Extracting image bands...")
-    bands, imgbands = sample_p(path)
+    bands, imgbands = extract(path)
     W, H = size(imgbands)[1:2]
     println("Done!")
 

@@ -139,7 +139,7 @@ function classify(path::String; ks::UnitRange=2:2, N::Int=10_000)
     labels = reshape(labels, W, H)
     println("Done!")
 
-    (labels=labels, imgbands=imgbands, pcamach=pcamach, kmedmachs=kmedmachs)
+    (labels=labels, imgbands=imgbands, pcamach=pcamach, kmedmachs=kmedmachs, X=X)
 end
 
 function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine)

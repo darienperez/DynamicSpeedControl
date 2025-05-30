@@ -191,8 +191,7 @@ function cluster_gmm(init::Dict, krange)
     return init
 end
 
-function evaluate_quality(
-    cs::ClusteredState;
+function evaluate_quality(cs::ClusteredState;
     qualityIdx::Symbol=:dunn,
     metric = SqEuclidean()
     )   
@@ -216,24 +215,28 @@ function evaluate_quality(
 end
 
 function evaluate_quality(results::NamedTuple;
-                          qualityIdx::Symbol=:dunn,
-                          metric = SqEuclidean())   
-    
-    pcabands = transform(results.pcamach, results.X) |> matrix
-    # indices = Dict{Int, Float64}()
-    # for (k, labels) in cs.labels
-    if qualityIdx in (:calinski_harabasz, :xie_beni, :davies_bouldin)
-        centers = fitted_params(results.kmedmach).medoids
-        index = clustering_quality(
-            pcabands', centers, reshape(results.labels, :); quality_index=qualityIdx, metric=metric
-        )
-    else
-        index = clustering_quality(
-            pcabands', results.labels; quality_index=qualityIdx, metric=metric
-        )
+    qualityIdx::Symbol=:dunn,
+    metric = SqEuclidean())   
+
+    # Transform feature matrix into PCA coordinates and swap rows with columns
+    pcaX = transform(results.pcamach, results.X) |> matrix |> permutedims
+
+    # Assess qualities for each k in the range of ks
+    qualities = []
+    for (k, kmed) in results.kmedmachs
+        centers = fitted_params(kmed).medoids
+        labels = kmed.report[:fit].assignments
+        if qualityIdx in (:calinski_harabasz, :xie_beni, :davies_bouldin)
+            push!(qualities, clustering_quality(
+                pcaX, centers, reshape(labels, :); quality_index=qualityIdx, metric=metric
+            ))
+        else
+            push!(qualities, clustering_quality(
+                pcaX, labels; quality_index=qualityIdx, metric=metric
+            ))
         end
-    # end
-    index
+    end
+    qualities
 end
 
 function ClusterQualities(cs::ClusteredState)

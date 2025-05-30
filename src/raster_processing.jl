@@ -50,7 +50,7 @@ function sample_pp(X::AbstractMatrix; N::Int = 10_000)
     X[idx, :]
 end
 
-function extract(path::AbstractString, blocksize::Int; N::Int=100)
+function extract(path::AbstractString, blocksize::Int, N::Int)
     # rng = MersenneTwister(1)
     read(path) do ds
         # gt = getgeotransform(ds)
@@ -81,7 +81,7 @@ function extract(path::AbstractString, blocksize::Int; N::Int=100)
     end # do block
 end
 
-function extract(path::AbstractString; N::Int = 100)
+function extract(path::AbstractString, N::Int)
     read(path) do ds
         imgbands = read(ds, (1,2,3))
         bands = reshape(imgbands, width(ds)*height(ds), 3)

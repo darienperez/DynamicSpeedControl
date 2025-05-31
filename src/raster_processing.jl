@@ -86,7 +86,7 @@ function extract(path::AbstractString, N::Int)
         imgbands = read(ds, (1,2,3))
         bands = reshape(imgbands, width(ds)*height(ds), 3)
         X = sample(
-            findall(r -> r[1][1] != UInt8(0), Array(eachrow(bands))),
+            bands[findall(r -> r[1][1] != UInt8(0), Array(eachrow(bands))), :],
             (N, 3),
             replace=false)
         return (Float32.(X), Float32.(bands), imgbands)

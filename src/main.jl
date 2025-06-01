@@ -96,7 +96,7 @@ function visuals(clustered::Dict, flags)
     plots
 end
 
-function classify(path::String; ks::UnitRange=2:2, N::Int=50_000)
+function cluster(path::String; ks::UnitRange=2:2, N::Int=50_000)
     kf_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_01_23.tif"
     kf2_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_02_06.tif"
 
@@ -125,21 +125,7 @@ function classify(path::String; ks::UnitRange=2:2, N::Int=50_000)
     end
     println("Done!")
 
-    # Apply PCA to bands and predict labels
-    println("Appling PCA to bands of full image...")
-    pcabands = transform(pcamach, DataFrame(bands, :auto))
-    println("Calculating distances to medoids for full image")
-    dists = transform(kmedmachs[2], pcabands)
-    println("Done!")
-
-    # Use distances to medoids to generate labels
-    println("Using distances to medoids to generate labels")
-    rowmins = argmin(Matrix(dists), dims=2)
-    labels = [CI[2] for CI in vec(rowmins)]
-    labels = reshape(labels, W, H)
-    println("Done!")
-
-    (labels=labels, imgbands=imgbands, pcamach=pcamach, kmedmachs=kmedmachs, X=X)
+    (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
 end
 
 function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine)

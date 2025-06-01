@@ -156,3 +156,32 @@ function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine)
 
     (labels=labels, imgbands=imgbands)
 end
+
+function classify(img::Base.ReinterpretArray{T}, pcamach::Machine, kmedmach::Machine) where T
+
+    println("Extracting image bands...")
+    bands = extract(img)
+    W, H = size(img)
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature bands...")
+    standardize!(bands)
+    println("Done!")
+
+    # Apply PCA to bands and predict labels
+    println("Appling PCA to bands of full image...")
+    pcabands = transform(pcamach, DataFrame(bands, :auto))
+    println("Calculating distances to medoids for full image")
+    dists = transform(kmedmach, pcabands)
+    println("Done!")
+
+    # Use distances to medoids to generate labels
+    println("Using distances to medoids to generate labels")
+    rowmins = argmin(Matrix(dists), dims=2)
+    labels = [CI[2] for CI in vec(rowmins)]
+    labels = reshape(labels, W, H)
+    println("Done!")
+
+    (labels=labels)
+end

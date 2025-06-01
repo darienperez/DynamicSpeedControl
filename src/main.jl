@@ -154,7 +154,7 @@ function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine)
     labels = reshape(labels, W, H)
     println("Done!")
 
-    (labels=labels, imgbands=imgbands)
+    (labels=labels, img=imgbands |> toimg)
 end
 
 function classify(img::Base.ReinterpretArray{T}, pcamach::Machine, kmedmach::Machine) where T

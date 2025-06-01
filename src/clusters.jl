@@ -214,16 +214,16 @@ function evaluate_quality(cs::ClusteredState;
     vals
 end
 
-function evaluate_quality(results::NamedTuple;
+function evaluate_quality(cluster::NamedTuple;
     qualityIdx::Symbol=:dunn,
     metric = SqEuclidean())   
 
     # Transform feature matrix into PCA coordinates and swap rows with columns
-    pcaX = transform(results.pcamach, results.X) |> matrix |> permutedims
+    pcaX = transform(cluster.pcamach, cluster.X) |> matrix |> permutedims
 
     # Assess qualities for each k in the range of ks
     qualities = []
-    for (k, kmed) in results.kmedmachs
+    for (k, kmed) in cluster.kmedmachs
         centers = fitted_params(kmed).medoids
         labels = kmed.report[:fit].assignments
         if qualityIdx in (:calinski_harabasz, :xie_beni, :davies_bouldin)

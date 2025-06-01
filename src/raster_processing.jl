@@ -101,7 +101,7 @@ function extract(path::AbstractString)
     end
 end
 
-function extract(img)
+function extract(img::Base.ReinterpretArray{T}) where T
     imgbands = channelview(img) |> x -> PermutedDimsArray(x, (2,3,1))
     W, H = size(imgbands)[1:2]
     bands = reshape(imgbands, W*H, 3)

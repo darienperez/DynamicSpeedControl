@@ -101,6 +101,13 @@ function extract(path::AbstractString)
     end
 end
 
+function extract(img)
+    imgbands = channelview(img) |> x -> PermutedDimsArray(x, (2,3,1))
+    W, H = size(imgbands)[1:2]
+    bands = reshape(imgbands, W*H, 3)
+    return Float32.(bands)
+end
+
 function toimg(imgbands::Array{UInt8, 3})
     # Convert to Matrix{RGB{N0f8}} and swap view of img dimensions for colorview()
     img = N0f8.(imgbands./255) |> x -> PermutedDimsArray(x, (3,1,2))

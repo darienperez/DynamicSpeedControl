@@ -9,7 +9,7 @@ using Colors: RGB, N0f8
 using DataFrames: DataFrame
 #using GLMakie
 #using GaussianMixtures
-using Images: colorview, Lab
+using Images: colorview, channelview, Lab
 #using Interpolations
 #using LinearAlgebra
 import MLJ: predict, Machine, machine, fit!, transform, matrix, table, fitted_params, @load

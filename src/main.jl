@@ -131,27 +131,27 @@ function cluster(path::String; ks::UnitRange=2:2, N::Int=50_000)
 end
 
 function cluster(path::String, ::Coords; ks::UnitRange=2:2, N::Int=50_000)
-    println("Sampling image and generating feature matrix and bands...")
-    X, bands = extract(path, N, Coords())
+    println("Sampling image and generating feature matrix (including coords) and bands...")
+    X = extract(path, N, Coords())
     println("Done!")
 
     # Standardize
     println("Standardizing feature matrix and bands...")
     standardize!(X)
-    standardize!(bands)
+    # standardize!(bands)
     println("Done!")
 
     # Do PCA and train kmed model
     println("Performing PCA...")
     pca = PCA(maxoutdim=3)
-    pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
+    pcamach = machine(pca, DataFrame(X, [:R, :G, :B, :X, :Y])) |> fit!
     println("Done!")
 
     println("Training K-Medoids model for k's from $(minimum(ks)) to $(maximum(ks))...")
     kmedmachs = Dict{Int, Machine}()
     for k in ks
         kmed = KMedoids(k=k)
-        kmedmachs[k] = machine(kmed, DataFrame(X, [:R, :G, :B])) |> fit!
+        kmedmachs[k] = machine(kmed, DataFrame(X, [:R, :G, :B, :X, :Y])) |> fit!
     end
     println("Done!")
 

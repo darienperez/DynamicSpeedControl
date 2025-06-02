@@ -114,7 +114,7 @@ function extract(path::AbstractString, N::Int, ::Coords)
             (N, d),
             replace=false)
 
-        return (Float32.(X), Float32.(bands))
+        return Float32.(X)
     end
 end
 

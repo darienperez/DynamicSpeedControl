@@ -207,6 +207,15 @@ function bic(gmm::GMM, X::Matrix{Float32})
     bic_value
 end
 
+function evaluate_quality(cluster::NamedTuple, ::UseGMM)
+    qualities = Vector{Float32}(undef, length(cluster.gmmmachs) + 1)
+    X = cluster.X
+    for (k, gmm) in cluster.gmmmachs
+        qualities[k] = bic(gmm, X)
+    end
+    qualities[2:end]
+end
+
 function ClusterQualities(cs::ClusteredState)
     qs = []
     cqs = fieldnames(ClusterQualities)

@@ -259,12 +259,13 @@ function classify(path::AbstractString, pcamach::Machine, gmmmach::GMM)
 
     # Apply PCA to bands and predict labels
     println("Appling PCA to bands of full image...")
-    pcabands = transform(pcamach, DataFrame(bands, :auto))
+    pcabands = transform(pcamach, DataFrame(bands, :auto)) |> matrix
     println("Done!")
 
     # 
     println("Using log-likelihood per Gaussian to medoids to generate labels")
-    ll = llpg(gmmmach, )
+    labels = map(argmax, eachrow(llpg(gmmmach, pcabands)))
+    labels = reshape(labels, W, H)
     println("Done!")
 
     (labels=labels, img=imgbands |> toimg)

@@ -105,14 +105,12 @@ function cluster(path::String; ks::UnitRange=2:2, N::Int=50_000)
     kf2_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_02_06.tif"
 
     println("Sampling image and generating feature matrix and bands...")
-    X, bands, imgbands = extract(path, N)
-    W, H = size(imgbands)[1:2]
+    X, _ = extract(path, N)
     println("Done!")
 
     # Standardize
     println("Standardizing feature matrix and bands...")
     standardize!(X)
-    standardize!(bands)
     println("Done!")
 
     # Do PCA and train kmed model

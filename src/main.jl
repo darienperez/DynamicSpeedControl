@@ -146,6 +146,7 @@ function cluster(path::String, ::UseGMM; ks::UnitRange=2:2, N::Int=50_000)
     println("Performing PCA...")
     pca = PCA(maxoutdim=3)
     pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
+    X = transform(pcamach, DataFrame(X, [:R, :G, :B])) |> matrix
     println("Done!")
 
     println("Training GMM models for mixtures k's from $(minimum(ks)) to $(maximum(ks))...")
@@ -239,6 +240,31 @@ function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine)
     rowmins = argmin(Matrix(dists), dims=2)
     labels = [CI[2] for CI in vec(rowmins)]
     labels = reshape(labels, W, H)
+    println("Done!")
+
+    (labels=labels, img=imgbands |> toimg)
+end
+
+function classify(path::AbstractString, pcamach::Machine, gmmmach::GMM)
+
+    println("Extracting image bands...")
+    bands, imgbands = extract(path)
+    W, H = size(imgbands)[1:2]
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature bands...")
+    standardize!(bands)
+    println("Done!")
+
+    # Apply PCA to bands and predict labels
+    println("Appling PCA to bands of full image...")
+    pcabands = transform(pcamach, DataFrame(bands, :auto))
+    println("Done!")
+
+    # 
+    println("Using log-likelihood per Gaussian to medoids to generate labels")
+    ll = llpg(gmmmach, )
     println("Done!")
 
     (labels=labels, img=imgbands |> toimg)

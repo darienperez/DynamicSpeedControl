@@ -145,52 +145,6 @@ clusters(cs::ClusteredState, k) = begin
        [Xs[ls[k] .== l, :] for l in unique(ls[k])]
 end
 
-
-# Function to cluster using a Gaussian Mixture Model (GMM)
-# function cluster_gmm(init::Dict, krange)
-#     # Prepare quality metrics storage
-#     cluster_qualities = Dict(
-#         :dunn => Float64[],
-#         :silhouettes => Float64[],
-#         :calinski_harabasz => Float64[],
-#         :xie_beni => Float64[],
-#         :davies_bouldin => Float64[]
-#     )
-#     labmat = MLJ.matrix(init[:machines][:pca][:transforms][:lab])
-#     qidxs = [:dunn, :silhouettes, :calinski_harabasz, :xie_beni, :davies_bouldin]
-
-#     # Evaluator helper
-#     evaluator!(cluster_qualities::Dict, data::AbstractMatrix, qidxs, labels, centers) = begin
-#         require_centers = Set([:calinski_harabasz, :xie_beni, :davies_bouldin])
-#         for qidx in qidxs
-#             if qidx in require_centers
-#                 quality = clustering_quality(data', centers, labels; quality_index=qidx, metric=SqEuclidean())
-#             else
-#                 quality = clustering_quality(data', labels; quality_index=qidx, metric=SqEuclidean())
-#             end
-#             push!(cluster_qualities[qidx], quality)
-#         end
-#     end
-
-#     for k in krange
-#         # Fit GMM directly using GaussianMixtures.jl (components, data)
-#         gmm_model = GMM(k, Matrix(labmat'))       # fit GMM with k components on data (samples×features)
-#         labels = GaussianMixtures.assign_clusters(gmm_model, labmat')  # get hard assignments
-#         centers = gmm_model.μ                      # component means
-        
-#         # Compute quality metrics
-#         evaluator!(cluster_qualities, labmat, qidxs, labels, centers)
-        
-#         # Store the fitted GMM model
-#         init[Symbol("gmm", k)] = gmm_model
-#     end
-
-#     # Save results back into init
-    
-#     init[:gmmcluster_qualities] = cluster_qualities
-#     return init
-# end
-
 function evaluate_quality(cs::ClusteredState;
     qualityIdx::Symbol=:dunn,
     metric = SqEuclidean()

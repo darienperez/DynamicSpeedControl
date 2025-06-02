@@ -130,7 +130,7 @@ function cluster(path::String; ks::UnitRange=2:2, N::Int=50_000)
     (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
 end
 
-function cluster(path::String; ks::UnitRange=2:2, N::Int=50_000, ::Coords)
+function cluster(path::String, ::Coords; ks::UnitRange=2:2, N::Int=50_000)
     println("Sampling image and generating feature matrix and bands...")
     X, bands = extract(path, N, Coords())
     println("Done!")

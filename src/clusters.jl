@@ -239,6 +239,20 @@ function evaluate_quality(cluster::NamedTuple;
     qualities
 end
 
+function bic(gmm::GMM, X::Matrix{Float32})
+    total_ll = llpg(gmm, X) |> sum
+    k = n_components(gmm)
+    n, d = size(X)
+    cov_params = if kind(gmm) == :full
+        k * (d*(d+1) / 2)
+    else
+        k * d
+    end
+    num_params = (k - 1) + (k * d) + cov_params
+    bic_value = -2 * total_ll + num_params * log(n)
+    bic_value
+end
+
 function ClusterQualities(cs::ClusteredState)
     qs = []
     cqs = fieldnames(ClusterQualities)

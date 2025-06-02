@@ -8,7 +8,7 @@ using Clustering: SqEuclidean, clustering_quality
 using Colors: RGB, N0f8
 using DataFrames: DataFrame
 #using GLMakie
-#using GaussianMixtures
+using GaussianMixtures: GMM, em!, llpg, loglikelihood, n_components, kind
 using Images: colorview, channelview, Lab
 #using Interpolations
 #using LinearAlgebra
@@ -31,6 +31,7 @@ classify,
 InitState,
 UseDict,
 Coords,
+UseGMM,
 
 # RasterProcessing
 PixelProcessor,
@@ -48,7 +49,7 @@ ClusterQualities,
 cluster,
 clusters,
 standardize!,
-cluster_gmm,
+bic,
 evaluate_quality,
 
 # SpeedMapping

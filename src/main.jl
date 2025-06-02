@@ -32,6 +32,10 @@ struct Coords end
 
 struct IsLAB end
 
+struct UseDict end
+
+struct UseGMM end
+
 function initialize(;path::Union{AbstractString, Nothing}=nothing)
     if isnothing(path)
         path = "/Users/darien/Desktop/Academia/Research/UAV Applications/Dr. Jacob's Research/Code/Julia/DynamicSpeedControl/data/rasters/processed/ortho_2_20_2021_uncorrected_6348_NAD83_19N.tif"
@@ -40,8 +44,6 @@ function initialize(;path::Union{AbstractString, Nothing}=nothing)
     pp = PixelProcessor(rd.img, rd.geotransform)
     InitState(rd, pp)
 end
-
-struct UseDict end
 
 function initialize(::UseDict;
     raster_path = "data/rasters/processed/ortho_2_20_2021_uncorrected_6348_NAD83_19N.tif",
@@ -128,6 +130,33 @@ function cluster(path::String; ks::UnitRange=2:2, N::Int=50_000)
     println("Done!")
 
     (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
+end
+
+function cluster(path::String, ::UseGMM; ks::UnitRange=2:2, N::Int=50_000)
+    println("Sampling image and generating feature matrix and bands...")
+    X, _ = extract(path, N)
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature matrix and bands...")
+    standardize!(X)
+    println("Done!")
+
+    # Do PCA and train kmed model
+    println("Performing PCA...")
+    pca = PCA(maxoutdim=3)
+    pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
+    println("Done!")
+
+    println("Training GMM models for mixtures k's from $(minimum(ks)) to $(maximum(ks))...")
+    gmmmachs = Dict{Int, GMM}()
+    for k in ks
+        gmm = GMM(k, X)
+        gmmmachs[k] = gmm
+    end
+    println("Done!")
+
+    (pcamach=pcamach, gmmmachs=gmmmachs, X=X)
 end
 
 function cluster(path::String, ::Coords; ks::UnitRange=2:2, N::Int=50_000)

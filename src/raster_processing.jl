@@ -118,6 +118,29 @@ function extract(path::AbstractString, N::Int, ::Coords)
     end
 end
 
+function extract(path::AbstractString, N::Int, ::IsLAB)
+    println("sampling in LAB space $N times...")
+    read(path) do ds
+        println("ArchGDAL.IDataset assigned to ds")
+        imgbands = read(ds, (1,2,3)) |> toimg |> x -> Lab.(x) |> channelview
+        println("imgbands should now be in LAB space")
+        W, H = width(ds), height(ds)
+        println("width and height of ds assigned to W, H")
+        bands = reshape(imgbands, W*H, 3)
+        println("bands shaped to size ($(W*H), 3)")
+        d = size(bands)[2]
+        println("feature depth is $d")
+
+        println("sampling bands $N times after filtering black background")
+        X = sample(
+            bands[findall(r -> r[1][1] != UInt8(0), Array(eachrow(bands))), :],
+            (N, d),
+            replace=false)
+
+        return Float32.(X)
+    end
+end
+
 function extract(path::AbstractString, ::Coords)
     read(path) do ds
         W, H = width(ds), height(ds)

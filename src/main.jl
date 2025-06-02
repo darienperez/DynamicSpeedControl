@@ -30,6 +30,8 @@ end
 
 struct Coords end
 
+struct IsLAB end
+
 function initialize(;path::Union{AbstractString, Nothing}=nothing)
     if isnothing(path)
         path = "/Users/darien/Desktop/Academia/Research/UAV Applications/Dr. Jacob's Research/Code/Julia/DynamicSpeedControl/data/rasters/processed/ortho_2_20_2021_uncorrected_6348_NAD83_19N.tif"
@@ -158,6 +160,34 @@ function cluster(path::String, ::Coords; ks::UnitRange=2:2, N::Int=50_000)
     (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
 end
 
+function cluster(path::String, ::IsLAB; ks::UnitRange=2:2, N::Int=50_000)
+    println("Sampling image and generating feature matrix (LAB space) and bands...")
+    X = extract(path, N, IsLAB())
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature matrix...")
+    standardize!(X)
+    # standardize!(bands)
+    println("Done!")
+
+    # Do PCA and train kmed model
+    println("Performing PCA...")
+    pca = PCA(maxoutdim=3)
+    pcamach = machine(pca, DataFrame(X, [:L, :A, :B])) |> fit!
+    println("Done!")
+
+    println("Training K-Medoids model for k's from $(minimum(ks)) to $(maximum(ks))...")
+    kmedmachs = Dict{Int, Machine}()
+    for k in ks
+        kmed = KMedoids(k=k)
+        kmedmachs[k] = machine(kmed, DataFrame(X, [:L, :A, :B])) |> fit!
+    end
+    println("Done!")
+
+    (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
+end
+
 function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine)
 
     println("Extracting image bands...")
@@ -188,6 +218,34 @@ function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine)
 end
 
 function classify(path::AbstractString, ::Coords, pcamach::Machine, kmedmach::Machine)
+
+    println("Extracting image bands (including coords)...")
+    bands, W, H = extract(path, Coords())
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature bands...")
+    standardize!(bands)
+    println("Done!")
+
+    # Apply PCA to bands and predict labels
+    println("Appling PCA to bands of full image...")
+    pcabands = transform(pcamach, DataFrame(bands, :auto))
+    println("Calculating distances to medoids for full image")
+    dists = transform(kmedmach, pcabands)
+    println("Done!")
+
+    # Use distances to medoids to generate labels
+    println("Using distances to medoids to generate labels")
+    rowmins = argmin(Matrix(dists), dims=2)
+    labels = [CI[2] for CI in vec(rowmins)]
+    labels = reshape(labels, W, H)
+    println("Done!")
+
+    (labels=labels)
+end
+
+function classify(path::AbstractString, ::IsLAB, pcamach::Machine, kmedmach::Machine)
 
     println("Extracting image bands (including coords)...")
     bands, W, H = extract(path, Coords())

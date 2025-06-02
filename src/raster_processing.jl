@@ -159,6 +159,19 @@ function extract(path::AbstractString, ::Coords)
     end
 end
 
+function extract(path::AbstractString, ::IsLAB)
+    read(path) do ds
+        println("ArchGDAL.IDataset assigned to ds")
+        imgbands = read(ds, (1,2,3)) |> toimg |> x -> Lab.(x) |> channelview
+        println("imgbands should now be in LAB space")
+        W, H = width(ds), height(ds)
+        println("width and height of ds assigned to W, H")
+        bands = reshape(imgbands, W*H, 3)
+        println("bands shaped to size ($(W*H), 3)")
+    end
+end
+
+
 function extract(path::AbstractString)
     read(path) do ds
         imgbands = read(ds, (1,2,3))

@@ -248,7 +248,7 @@ end
 function classify(path::AbstractString, ::IsLAB, pcamach::Machine, kmedmach::Machine)
 
     println("Extracting image bands (including coords)...")
-    bands, W, H = extract(path, Coords())
+    bands, W, H = extract(path, IsLAB())
     println("Done!")
 
     # Standardize

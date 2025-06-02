@@ -118,6 +118,24 @@ function extract(path::AbstractString, N::Int, ::Coords)
     end
 end
 
+function extract(path::AbstractString, ::Coords)
+    read(path) do ds
+        W, H = width(ds), height(ds)
+        # Spatial Coordinates
+        originX, pixelW, _, originY, _, pixelH = getgeotransform(ds)
+        xs = originX .+ (0:W-1) .* pixelW
+        ys = originY .+ (0:H-1) .* pixelH
+        # make two 1×(H*W) vectors of coords
+        Xs = repeat(xs, inner=H)     # length H*W
+        Ys = repeat(ys, outer=W)     # length H*W
+        coords = hcat(Xs, Ys)
+
+        imgbands = read(ds, (1,2,3))
+        bands = reshape(imgbands, W*H, 3) |> x -> hcat(x, coords)
+        (bands, W, H)
+    end
+end
+
 function extract(path::AbstractString)
     read(path) do ds
         imgbands = read(ds, (1,2,3))

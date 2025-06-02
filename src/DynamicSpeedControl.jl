@@ -30,6 +30,7 @@ visuals,
 classify,
 InitState,
 UseDict,
+Coords,
 
 # RasterProcessing
 PixelProcessor,

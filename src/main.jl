@@ -161,7 +161,7 @@ function cluster(path::String, ::Coords; ks::UnitRange=2:2, N::Int=50_000)
 end
 
 function cluster(path::String, ::IsLAB; ks::UnitRange=2:2, N::Int=50_000)
-    println("Sampling image and generating feature matrix (LAB space) and bands...")
+    println("Sampling LAB-space image and generating feature matrix and bands...")
     X = extract(path, N, IsLAB())
     println("Done!")
 

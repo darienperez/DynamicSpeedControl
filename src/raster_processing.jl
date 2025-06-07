@@ -267,3 +267,23 @@ function densities(clustered::Dict)
 
     clustered[:pixels] = (x=x_centers, y=y_centers, densities=densities, hist=hist)
 end
+
+function saveGTiff(orthopath::String, inraspath::String, outraspath::String)
+    readraster(orthopath) do ds
+        gt = getgeotransform(ds)
+        proj_WGS84 = getproj(ds)
+        drv = getdriver("GTiff")
+        readraster(inraspath) do src_ds
+            create(outraspath, driver=drv, width=width(ds), height=height(ds), nbands=3, dtype=UInt8) do out_ds
+                for i in 1:3
+                    src_band = getband(src_ds, i)
+                    arr = read(src_band)
+                    dst_band = getband(out_ds, i)
+                    write!(dst_band, arr)
+                    end
+                setgeotransform!(out_ds, gt)
+                setproj!(out_ds, proj_WGS84)
+            end
+        end
+    end
+end

@@ -103,9 +103,6 @@ function visuals(clustered::Dict, flags)
 end
 
 function cluster(path::String; ks::UnitRange=2:2, N::Int=50_000)
-    kf_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_01_23.tif"
-    kf2_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_02_06.tif"
-
     println("Sampling image and generating feature matrix and bands...")
     X, _ = extract(path, N)
     println("Done!")

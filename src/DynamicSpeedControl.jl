@@ -42,6 +42,7 @@ segment,
 extract,
 toimg,
 densities,
+saveGTiff,
 
 # Clustering
 ClusteredState,

@@ -19,7 +19,6 @@ PCA = @load PCA pkg=MultivariateStats verbosity=0
 #using PlotlyJS
 #using PlutoPlotly
 using StatsBase: sample, mean, std, Random.seed!
-# seed!(6213)
 #using Statistics
 #using FileIO
 

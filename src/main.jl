@@ -355,3 +355,7 @@ function classify(img::Base.ReinterpretArray{T}, pcamach::Machine, kmedmach::Mac
 
     (labels=labels)
 end
+
+function classify(k::Int, p::String, clus::NamedTuple) 
+    classify(p, clus.pcamach, clus.kmedmachs[k])
+end

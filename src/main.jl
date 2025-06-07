@@ -359,3 +359,7 @@ end
 function classify(k::Int, p::String, clus::NamedTuple) 
     classify(p, clus.pcamach, clus.kmedmachs[k])
 end
+
+function classify(p::String, k::Int, clus::NamedTuple) 
+    classify(p, clus.pcamach, clus.gmmmachs[k])
+end

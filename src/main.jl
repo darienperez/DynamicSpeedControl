@@ -103,6 +103,8 @@ function visuals(clustered::Dict, flags)
 end
 
 function cluster(path::String; ks::UnitRange=2:2, N::Int=50_000)
+    seed!(6213)
+    println("Using seed $(seed!(6213))...")
     println("Sampling image and generating feature matrix and bands...")
     X, _ = extract(path, N)
     println("Done!")

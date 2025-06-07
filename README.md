@@ -29,6 +29,8 @@ kf10_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regio
 
 kf11_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_05_27.tif"
 
-outpath = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/kmedoids/outputs/rasters/"
+outpathkm = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/kmedoids/outputs/rasters/"
+
+outpathtest = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/kmedoids/outputs/tests/"
 
 outpathgmm = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/gaussianMMs/outputs/"

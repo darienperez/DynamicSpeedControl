@@ -33,11 +33,13 @@ kf12_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regio
 
 kf13_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/MR/KF_ortho_MR_2025_02_03.tif"
 
-kf13_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/MR/KF_ortho_MR_2025_02_19.tif"
+kf14_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/MR/KF_ortho_MR_2025_02_19.tif"
 
 outpathkm = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/kmedoids/outputs/rasters/"
 
 outpathtestkm = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/kmedoids/outputs/tests/"
+
+outpathtestkm_mr = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/MR/kmedoids/outputs/tests/"
 
 outpathmaskkm = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/kmedoids/outputs/masks/"
 

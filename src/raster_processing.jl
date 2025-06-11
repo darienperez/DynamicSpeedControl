@@ -86,7 +86,8 @@ function extract(path::AbstractString, N::Int)
         imgbands = read(ds, (1,2,3))
         W, H = width(ds), height(ds)
         bands = reshape(imgbands, W*H, 3)
-        idxs = reshape(any(!iszero, bands, dims=2), :)
+        nowhiteblack(r) = (r !== UInt8(0)) & (r !== UInt8(255))
+        idxs = reshape(any(row -> nowhiteblack(row), bands, dims=2), :)
         X = sample(
             bands[idxs, :],
             (N, 3),
@@ -196,11 +197,24 @@ function extract(path::AbstractString)
     end
 end
 
-function extract(img::Base.ReinterpretArray{T}) where T
+function extract(img::Matrix{RGB{N0f8}})
     imgbands = channelview(img) |> x -> PermutedDimsArray(x, (2,3,1))
     W, H = size(imgbands)[1:2]
     bands = reshape(imgbands, W*H, 3)
     return Float32.(bands)
+end
+
+function extract(img::Matrix{RGB{N0f8}}, N::Int)
+    imgbands = channelview(img) |> x -> PermutedDimsArray(x, (2,3,1))
+    W, H = size(imgbands)[1:2]
+    bands = reshape(imgbands, W*H, 3)
+    nowhiteblack(r) = (r !== UInt8(0)/UInt8(255)) & (r !== UInt8(255)/UInt8(255))
+        idxs = reshape(any(row -> nowhiteblack(row), bands, dims=2), :)
+        X = sample(
+            bands[idxs, :],
+            (N, 3),
+            replace=false)
+        return Float32.(X)
 end
 
 function toimg(imgbands::Array{UInt8, 3})

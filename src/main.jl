@@ -246,6 +246,35 @@ function cluster(path::String, ::IsLAB; ks::UnitRange=2:2, N::Int=50_000)
     (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
 end
 
+function cluster(img::Matrix{RGB{N0f8}}; ks::UnitRange=2:2, N::Int=50_000)
+    seed!(6213)
+    println("Using seed $(seed!(6213))...")
+    println("Sampling image and generating feature matrix and bands...")
+    X = extract(img, N)
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature matrix and bands...")
+    standardize!(X)
+    println("Done!")
+
+    # Do PCA and train kmed model
+    println("Performing PCA...")
+    pca = PCA(maxoutdim=3)
+    pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
+    println("Done!")
+
+    println("Training K-Medoids model for k's from $(minimum(ks)) to $(maximum(ks))...")
+    kmedmachs = Dict{Int, Machine}()
+    for k in ks
+        kmed = KMedoids(k=k)
+        kmedmachs[k] = machine(kmed, DataFrame(X, [:R, :G, :B])) |> fit!
+    end
+    println("Done!")
+
+    (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
+end
+
 function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine)
 
     println("Extracting image bands...")
@@ -357,7 +386,7 @@ function classify(path::AbstractString, ::IsLAB, pcamach::Machine, kmedmach::Mac
     (labels=labels)
 end
 
-function classify(img::Base.ReinterpretArray{T}, pcamach::Machine, kmedmach::Machine) where T
+function classify(img::Matrix{RGB{N0f8}}, pcamach::Machine, kmedmach::Machine)
 
     println("Extracting image bands...")
     bands = extract(img)
@@ -388,6 +417,10 @@ end
 
 function classify(k::Int, p::String, clus::NamedTuple) 
     classify(p, clus.pcamach, clus.kmedmachs[k])
+end
+
+function classify(k::Int, img::Matrix{RGB{N0f8}}, clus::NamedTuple) 
+    classify(img, clus.pcamach, clus.kmedmachs[k])
 end
 
 function classify(p::String, k::Int, clus::NamedTuple) 

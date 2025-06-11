@@ -95,6 +95,20 @@ function extract(path::AbstractString, N::Int)
     end
 end
 
+function extract(::NoWhites, path::AbstractString, N::Int)
+    read(path) do ds
+        imgbands = read(ds, (1,2,3))
+        W, H = width(ds), height(ds)
+        bands = reshape(imgbands, W*H, 3)
+        idxs = reshape(any(r -> r !== UInt8(255), bands, dims=2), :)
+        X = sample(
+            bands[idxs, :],
+            (N, 3),
+            replace=false)
+        return (Float32.(X), W, H)
+    end
+end
+
 function extract(path::AbstractString, N::Int, ::Coords)
     read(path) do ds
         W, H = width(ds), height(ds)

@@ -44,6 +44,7 @@ extract,
 toimg,
 densities,
 saveGTiff,
+NoWhites,
 
 # Clustering
 ClusteredState,

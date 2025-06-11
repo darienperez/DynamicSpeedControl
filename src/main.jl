@@ -36,6 +36,8 @@ struct UseDict end
 
 struct UseGMM end
 
+struct NoWhites end
+
 function initialize(;path::Union{AbstractString, Nothing}=nothing)
     if isnothing(path)
         path = "/Users/darien/Desktop/Academia/Research/UAV Applications/Dr. Jacob's Research/Code/Julia/DynamicSpeedControl/data/rasters/processed/ortho_2_20_2021_uncorrected_6348_NAD83_19N.tif"
@@ -107,6 +109,35 @@ function cluster(path::String; ks::UnitRange=2:2, N::Int=50_000)
     println("Using seed $(seed!(6213))...")
     println("Sampling image and generating feature matrix and bands...")
     X, _ = extract(path, N)
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature matrix and bands...")
+    standardize!(X)
+    println("Done!")
+
+    # Do PCA and train kmed model
+    println("Performing PCA...")
+    pca = PCA(maxoutdim=3)
+    pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
+    println("Done!")
+
+    println("Training K-Medoids model for k's from $(minimum(ks)) to $(maximum(ks))...")
+    kmedmachs = Dict{Int, Machine}()
+    for k in ks
+        kmed = KMedoids(k=k)
+        kmedmachs[k] = machine(kmed, DataFrame(X, [:R, :G, :B])) |> fit!
+    end
+    println("Done!")
+
+    (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
+end
+
+function cluster(::NoWhites, path::String; ks::UnitRange=2:2, N::Int=50_000)
+    seed!(6213)
+    println("Using seed $(seed!(6213))...")
+    println("Sampling image and generating feature matrix and bands...")
+    X, _ = extract(NoWhites(), path, N)
     println("Done!")
 
     # Standardize

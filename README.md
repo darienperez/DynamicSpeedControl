@@ -39,7 +39,7 @@ tf1path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions
 
 tf2path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/GV/TF_ortho_GV_2021_12_21.tif"
 
-tf3path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/GV/TF_ortho_P4_2022_01_26_HS.tif"
+tf3path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/TF_ortho_P4_2022_01_26_HS.tif"
 
 tf4path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/GV/TF_ortho_GV_2023_03_01.tif"
 

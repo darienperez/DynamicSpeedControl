@@ -49,7 +49,11 @@ outpathtestkm = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold R
 
 outpathtestkm_mr = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/MR/kmedoids/outputs/tests/"
 
+outpathtestkm_gv = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/GV/kmedoids/outputs/tests/"
+
 outpathmaskkm = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/kmedoids/outputs/masks/"
+
+outpathmaskgv = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/GV/kmedoids/outputs/masks/"
 
 outpathgmm = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/gaussianMMs/outputs/rasters/"
 

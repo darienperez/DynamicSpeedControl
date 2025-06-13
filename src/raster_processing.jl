@@ -50,6 +50,59 @@ function sample_pp(X::AbstractMatrix; N::Int = 10_000)
     X[idx, :]
 end
 
+function extract(path::AbstractString)
+    read(path) do ds
+        imgbands = read(ds, (1,2,3))
+        bands = reshape(imgbands, width(ds)*height(ds), 3)
+        return (Float32.(bands), imgbands)
+    end
+end
+
+function extract(path::AbstractString, ::Coords)
+    read(path) do ds
+        W, H = width(ds), height(ds)
+        # Spatial Coordinates
+        originX, pixelW, _, originY, _, pixelH = getgeotransform(ds)
+        xs = originX .+ (0:W-1) .* pixelW
+        ys = originY .+ (0:H-1) .* pixelH
+        # make two 1×(H*W) vectors of coords
+        Xs = repeat(xs, inner=H)     # length H*W
+        Ys = repeat(ys, outer=W)     # length H*W
+        coords = hcat(Xs, Ys)
+
+        imgbands = read(ds, (1,2,3))
+        bands = reshape(imgbands, W*H, 3) |> x -> hcat(x, coords)
+        (bands, W, H)
+    end
+end
+
+function extract(path::AbstractString, ::IsLAB)
+    read(path) do ds
+        println("ArchGDAL.IDataset assigned to ds")
+        imgbands = read(ds, (1,2,3)) |> toimg |> x -> Lab.(x) |> channelview
+        println("imgbands should now be in LAB space")
+        W, H = width(ds), height(ds)
+        println("width and height of ds assigned to W, H")
+        bands = reshape(imgbands, W*H, 3)
+        println("bands shaped to size ($(W*H), 3)")
+    end
+end
+
+function extract(path::AbstractString, N::Int)
+    read(path) do ds
+        imgbands = read(ds, (1,2,3))
+        W, H = width(ds), height(ds)
+        bands = reshape(imgbands, W*H, 3)
+        nowhiteblack(r) = (r !== UInt8(0)) & (r !== UInt8(255))
+        idxs = reshape(any(row -> nowhiteblack(row), bands, dims=2), :)
+        X = sample(
+            bands[idxs, :],
+            (N, 3),
+            replace=false)
+        return (Float32.(X), W, H)
+    end
+end
+
 function extract(path::AbstractString, blocksize::Int, N::Int)
     # rng = MersenneTwister(1)
     read(path) do ds
@@ -81,22 +134,7 @@ function extract(path::AbstractString, blocksize::Int, N::Int)
     end # do block
 end
 
-function extract(path::AbstractString, N::Int)
-    read(path) do ds
-        imgbands = read(ds, (1,2,3))
-        W, H = width(ds), height(ds)
-        bands = reshape(imgbands, W*H, 3)
-        nowhiteblack(r) = (r !== UInt8(0)) & (r !== UInt8(255))
-        idxs = reshape(any(row -> nowhiteblack(row), bands, dims=2), :)
-        X = sample(
-            bands[idxs, :],
-            (N, 3),
-            replace=false)
-        return (Float32.(X), W, H)
-    end
-end
-
-function extract(::NoWhites, path::AbstractString, N::Int)
+function extract(path::AbstractString, N::Int, ::NoWhites)
     read(path) do ds
         imgbands = read(ds, (1,2,3))
         W, H = width(ds), height(ds)
@@ -155,45 +193,6 @@ function extract(path::AbstractString, N::Int, ::IsLAB)
             replace=false)
 
         return Float32.(X)
-    end
-end
-
-function extract(path::AbstractString, ::Coords)
-    read(path) do ds
-        W, H = width(ds), height(ds)
-        # Spatial Coordinates
-        originX, pixelW, _, originY, _, pixelH = getgeotransform(ds)
-        xs = originX .+ (0:W-1) .* pixelW
-        ys = originY .+ (0:H-1) .* pixelH
-        # make two 1×(H*W) vectors of coords
-        Xs = repeat(xs, inner=H)     # length H*W
-        Ys = repeat(ys, outer=W)     # length H*W
-        coords = hcat(Xs, Ys)
-
-        imgbands = read(ds, (1,2,3))
-        bands = reshape(imgbands, W*H, 3) |> x -> hcat(x, coords)
-        (bands, W, H)
-    end
-end
-
-function extract(path::AbstractString, ::IsLAB)
-    read(path) do ds
-        println("ArchGDAL.IDataset assigned to ds")
-        imgbands = read(ds, (1,2,3)) |> toimg |> x -> Lab.(x) |> channelview
-        println("imgbands should now be in LAB space")
-        W, H = width(ds), height(ds)
-        println("width and height of ds assigned to W, H")
-        bands = reshape(imgbands, W*H, 3)
-        println("bands shaped to size ($(W*H), 3)")
-    end
-end
-
-
-function extract(path::AbstractString)
-    read(path) do ds
-        imgbands = read(ds, (1,2,3))
-        bands = reshape(imgbands, width(ds)*height(ds), 3)
-        return (Float32.(bands), imgbands)
     end
 end
 

@@ -104,7 +104,7 @@ function visuals(clustered::Dict, flags)
     plots
 end
 
-function cluster(path::String; ks::UnitRange=2:2, N::Int=50_000)
+function cluster(path::String; ks::UnitRange=2:2, N::Int=10_000)
     seed!(6213)
     println("Using seed $(seed!(6213))...")
     println("Sampling image and generating feature matrix and bands...")
@@ -133,7 +133,7 @@ function cluster(path::String; ks::UnitRange=2:2, N::Int=50_000)
     (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
 end
 
-function cluster(::NoWhites, path::String; ks::UnitRange=2:2, N::Int=50_000)
+function cluster(::NoWhites, path::String; ks::UnitRange=2:2, N::Int=10_000)
     seed!(6213)
     println("Using seed $(seed!(6213))...")
     println("Sampling image and generating feature matrix and bands...")
@@ -162,7 +162,7 @@ function cluster(::NoWhites, path::String; ks::UnitRange=2:2, N::Int=50_000)
     (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
 end
 
-function cluster(path::String, ::UseGMM; ks::UnitRange=2:2, N::Int=50_000)
+function cluster(path::String, ::UseGMM; ks::UnitRange=2:2, N::Int=10_000)
     println("Sampling image and generating feature matrix and bands...")
     X, _ = extract(path, N)
     println("Done!")
@@ -190,7 +190,7 @@ function cluster(path::String, ::UseGMM; ks::UnitRange=2:2, N::Int=50_000)
     (pcamach=pcamach, gmmmachs=gmmmachs, X=X)
 end
 
-function cluster(path::String, ::Coords; ks::UnitRange=2:2, N::Int=50_000)
+function cluster(path::String, ::Coords; ks::UnitRange=2:2, N::Int=10_000)
     println("Sampling image and generating feature matrix (including coords) and bands...")
     X = extract(path, N, Coords())
     println("Done!")
@@ -218,7 +218,7 @@ function cluster(path::String, ::Coords; ks::UnitRange=2:2, N::Int=50_000)
     (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
 end
 
-function cluster(path::String, ::IsLAB; ks::UnitRange=2:2, N::Int=50_000)
+function cluster(path::String, ::IsLAB; ks::UnitRange=2:2, N::Int=10_000)
     println("Sampling LAB-space image and generating feature matrix and bands...")
     X = extract(path, N, IsLAB())
     println("Done!")
@@ -246,7 +246,7 @@ function cluster(path::String, ::IsLAB; ks::UnitRange=2:2, N::Int=50_000)
     (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
 end
 
-function cluster(img::Matrix{RGB{N0f8}}; ks::UnitRange=2:2, N::Int=50_000)
+function cluster(img::Matrix{RGB{N0f8}}; ks::UnitRange=2:2, N::Int=10_000)
     seed!(6213)
     println("Using seed $(seed!(6213))...")
     println("Sampling image and generating feature matrix and bands...")

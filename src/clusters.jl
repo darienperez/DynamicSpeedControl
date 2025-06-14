@@ -168,6 +168,12 @@ function evaluate_quality(cs::ClusteredState;
     vals
 end
 
+function qualities(cluster::NamedTuple)
+    qualIdxs = [:dunn, :silhouettes, :calinski_harabasz, :xie_beni, :davies_bouldin]
+    quals = [evaluate_quality(cluster, qualityIdx=qID) for qID in qualIdxs]
+    hcat(quals...)
+end
+
 function evaluate_quality(cluster::NamedTuple;
     qualityIdx::Symbol=:dunn,
     metric = SqEuclidean())   

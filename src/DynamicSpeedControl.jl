@@ -45,6 +45,7 @@ toimg,
 densities,
 saveGTiff,
 NoWhites,
+lengths,
 
 # Clustering
 ClusteredState,
@@ -54,6 +55,7 @@ clusters,
 standardize!,
 bic,
 evaluate_quality,
+qualities,
 
 # SpeedMapping
 map_speeds,

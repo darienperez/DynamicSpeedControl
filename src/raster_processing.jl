@@ -79,12 +79,15 @@ end
 function extract(path::AbstractString, ::IsLAB)
     read(path) do ds
         println("ArchGDAL.IDataset assigned to ds")
-        imgbands = read(ds, (1,2,3)) |> toimg |> x -> Lab.(x) |> channelview
+        imgbands = read(ds, (1,2,3)) 
+        img = toimg(imgbands) 
+        bands = Lab.(img) |> channelview
         println("imgbands should now be in LAB space")
         W, H = width(ds), height(ds)
         println("width and height of ds assigned to W, H")
-        bands = reshape(imgbands, W*H, 3)
+        bands = reshape(bands, 3, W*H)'
         println("bands shaped to size ($(W*H), 3)")
+        return (Float32.(bands), imgbands)
     end
 end
 
@@ -181,18 +184,20 @@ function extract(path::AbstractString, N::Int, ::IsLAB)
         println("imgbands should now be in LAB space")
         W, H = width(ds), height(ds)
         println("width and height of ds assigned to W, H")
-        bands = reshape(imgbands, W*H, 3)
+        bands = reshape(imgbands, 3, W*H)'
         println("bands shaped to size ($(W*H), 3)")
         d = size(bands)[2]
         println("feature depth is $d")
 
         println("sampling bands $N times after filtering black background")
+        nowhiteblack(r) = (r !== Float32(0)) & (r !== Float32(100))
+        idxs = reshape(any(row -> nowhiteblack(row), bands, dims=2), :)
         X = sample(
-            bands[findall(r -> r[1][1] != UInt8(0), Array(eachrow(bands))), :],
+            bands[idxs, :],
             (N, d),
             replace=false)
 
-        return Float32.(X)
+        return X
     end
 end
 

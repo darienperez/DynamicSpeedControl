@@ -220,6 +220,8 @@ end
 
 function cluster(path::String, ::IsLAB; ks::UnitRange=2:2, N::Int=10_000)
     println("Sampling LAB-space image and generating feature matrix and bands...")
+    seed!(6213)
+    println("Using seed $(seed!(6213))...")
     X = extract(path, N, IsLAB())
     println("Done!")
 
@@ -360,8 +362,9 @@ end
 
 function classify(path::AbstractString, ::IsLAB, pcamach::Machine, kmedmach::Machine)
 
-    println("Extracting image bands (including coords)...")
-    bands, W, H = extract(path, IsLAB())
+    println("Extracting image bands (LAB space)...")
+    bands, imgbands = extract(path, IsLAB())
+    W, H = size(imgbands)[1:2]
     println("Done!")
 
     # Standardize
@@ -383,7 +386,7 @@ function classify(path::AbstractString, ::IsLAB, pcamach::Machine, kmedmach::Mac
     labels = reshape(labels, W, H)
     println("Done!")
 
-    (labels=labels)
+    (labels=labels, img = imgbands)
 end
 
 function classify(img::Matrix{RGB{N0f8}}, pcamach::Machine, kmedmach::Machine)
@@ -417,6 +420,10 @@ end
 
 function classify(k::Int, p::String, clus::NamedTuple) 
     classify(p, clus.pcamach, clus.kmedmachs[k])
+end
+
+function classify(k::Int, p::String, clus::NamedTuple, ::IsLAB) 
+    classify(p, IsLAB(), clus.pcamach, clus.kmedmachs[k])
 end
 
 function classify(k::Int, img::Matrix{RGB{N0f8}}, clus::NamedTuple) 

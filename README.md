@@ -27,9 +27,11 @@ kf9_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Region
 
 kf10_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_05_13.tif"
 
-kf11_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_05_27.tif"
+<!-- kf11_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_05_27.tif" -->
 
-kf12_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/MR/KF_ortho_MR_2025_02_03.tif"
+kf11_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_01_18.tif"
+
+kf12_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_01_23.tif"
 
 kf13_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/MR/KF_ortho_MR_2025_02_03.tif"
 

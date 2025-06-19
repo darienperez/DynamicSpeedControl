@@ -231,3 +231,9 @@ function ClusterQualities(cs::ClusteredState)
     end
     ClusterQualities(qs[1], qs[2], qs[3], qs[4], qs[5])
 end
+
+function ksfromquals(quals::Matrix)
+    ks = hcat(sortperm.(eachcol(quals[:,1:3]), rev=true)...)
+    ks = hcat(ks, hcat(sortperm.(eachcol(quals[:,4:5]))...))
+    ks .+ 1
+end

@@ -56,6 +56,7 @@ standardize!,
 bic,
 evaluate_quality,
 qualities,
+ksfromquals,
 
 # SpeedMapping
 map_speeds,

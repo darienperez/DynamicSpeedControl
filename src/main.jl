@@ -360,7 +360,7 @@ function classify(path::AbstractString, ::Coords, pcamach::Machine, kmedmach::Ma
     (labels=labels)
 end
 
-function classify(path::AbstractString, ::IsLAB, pcamach::Machine, kmedmach::Machine)
+function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine, ::IsLAB)
 
     println("Extracting image bands (LAB space)...")
     bands, imgbands = extract(path, IsLAB())
@@ -386,7 +386,7 @@ function classify(path::AbstractString, ::IsLAB, pcamach::Machine, kmedmach::Mac
     labels = reshape(labels, W, H)
     println("Done!")
 
-    (labels=labels, img = imgbands)
+    (labels=labels, img = imgbands |> toimg)
 end
 
 function classify(img::Matrix{RGB{N0f8}}, pcamach::Machine, kmedmach::Machine)
@@ -423,7 +423,7 @@ function classify(k::Int, p::String, clus::NamedTuple)
 end
 
 function classify(k::Int, p::String, clus::NamedTuple, ::IsLAB) 
-    classify(p, IsLAB(), clus.pcamach, clus.kmedmachs[k])
+    classify(p, clus.pcamach, clus.kmedmachs[k], IsLAB())
 end
 
 function classify(k::Int, img::Matrix{RGB{N0f8}}, clus::NamedTuple) 

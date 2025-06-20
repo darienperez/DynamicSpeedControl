@@ -418,6 +418,35 @@ function classify(img::Matrix{RGB{N0f8}}, pcamach::Machine, kmedmach::Machine)
     (labels=labels)
 end
 
+function classify(img::Matrix{RGB{N0f8}}, pcamach::Machine, kmedmach::Machine, ::IsLAB)
+
+    println("Extracting image bands...")
+    bands = extract(img, IsLAB())
+    W, H = size(img)
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature bands...")
+    standardize!(bands)
+    println("Done!")
+
+    # Apply PCA to bands and predict labels
+    println("Appling PCA to bands of full image...")
+    pcabands = transform(pcamach, DataFrame(bands, :auto))
+    println("Calculating distances to medoids for full image")
+    dists = transform(kmedmach, pcabands)
+    println("Done!")
+
+    # Use distances to medoids to generate labels
+    println("Using distances to medoids to generate labels")
+    rowmins = argmin(Matrix(dists), dims=2)
+    labels = [CI[2] for CI in vec(rowmins)]
+    labels = reshape(labels, W, H)
+    println("Done!")
+
+    (labels=labels)
+end
+
 function classify(k::Int, p::String, clus::NamedTuple) 
     classify(p, clus.pcamach, clus.kmedmachs[k])
 end
@@ -428,6 +457,10 @@ end
 
 function classify(k::Int, img::Matrix{RGB{N0f8}}, clus::NamedTuple) 
     classify(img, clus.pcamach, clus.kmedmachs[k])
+end
+
+function classify(k::Int, img::Matrix{RGB{N0f8}}, clus::NamedTuple, ::IsLAB) 
+    classify(img, clus.pcamach, clus.kmedmachs[k], IsLAB())
 end
 
 function classify(p::String, k::Int, clus::NamedTuple) 

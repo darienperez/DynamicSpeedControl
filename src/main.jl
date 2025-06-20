@@ -28,6 +28,16 @@ struct ClusterQualities
     davies_bouldin::Vector{}
 end
 
+struct Coords end
+
+struct IsLAB end
+
+struct UseDict end
+
+struct UseGMM end
+
+struct NoWhites end
+
 function initialize(;path::Union{AbstractString, Nothing}=nothing)
     if isnothing(path)
         path = "/Users/darien/Desktop/Academia/Research/UAV Applications/Dr. Jacob's Research/Code/Julia/DynamicSpeedControl/data/rasters/processed/ortho_2_20_2021_uncorrected_6348_NAD83_19N.tif"
@@ -36,8 +46,6 @@ function initialize(;path::Union{AbstractString, Nothing}=nothing)
     pp = PixelProcessor(rd.img, rd.geotransform)
     InitState(rd, pp)
 end
-
-struct UseDict end
 
 function initialize(::UseDict;
     raster_path = "data/rasters/processed/ortho_2_20_2021_uncorrected_6348_NAD83_19N.tif",
@@ -96,13 +104,365 @@ function visuals(clustered::Dict, flags)
     plots
 end
 
-function seg_workflow()
-    kf_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_01_23.tif"
-    kf2_path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/P4/KF_ortho_P4_2024_02_06.tif"
+function cluster(path::String; ks::UnitRange=2:2, N::Int=10_000)
+    seed!(6213)
+    println("Using seed $(seed!(6213))...")
+    println("Sampling image and generating feature matrix and bands...")
+    X, _ = extract(path, N)
+    println("Done!")
 
-    kf_cs = cluster(initialize(path=kf_path), krange=2:10)
-    # kf2_cs = cluster(initialize(path=kf2_path), krange=2:10)
+    # Standardize
+    println("Standardizing feature matrix and bands...")
+    standardize!(X)
+    println("Done!")
 
-    kf_lmatk2 = segment(kf_cs, kf_cs, 2)
-    # kf2_lmatk2 = segment(kf2_cs, kf2_cs, 2)
+    # Do PCA and train kmed model
+    println("Performing PCA...")
+    pca = PCA(maxoutdim=3)
+    pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
+    println("Done!")
+
+    println("Training K-Medoids model for k's from $(minimum(ks)) to $(maximum(ks))...")
+    kmedmachs = Dict{Int, Machine}()
+    for k in ks
+        kmed = KMedoids(k=k)
+        kmedmachs[k] = machine(kmed, DataFrame(X, [:R, :G, :B])) |> fit!
+    end
+    println("Done!")
+
+    (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
+end
+
+function cluster(::NoWhites, path::String; ks::UnitRange=2:2, N::Int=10_000)
+    seed!(6213)
+    println("Using seed $(seed!(6213))...")
+    println("Sampling image and generating feature matrix and bands...")
+    X, _ = extract(NoWhites(), path, N)
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature matrix and bands...")
+    standardize!(X)
+    println("Done!")
+
+    # Do PCA and train kmed model
+    println("Performing PCA...")
+    pca = PCA(maxoutdim=3)
+    pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
+    println("Done!")
+
+    println("Training K-Medoids model for k's from $(minimum(ks)) to $(maximum(ks))...")
+    kmedmachs = Dict{Int, Machine}()
+    for k in ks
+        kmed = KMedoids(k=k)
+        kmedmachs[k] = machine(kmed, DataFrame(X, [:R, :G, :B])) |> fit!
+    end
+    println("Done!")
+
+    (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
+end
+
+function cluster(path::String, ::UseGMM; ks::UnitRange=2:2, N::Int=10_000)
+    println("Sampling image and generating feature matrix and bands...")
+    X, _ = extract(path, N)
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature matrix and bands...")
+    standardize!(X)
+    println("Done!")
+
+    # Do PCA and train kmed model
+    println("Performing PCA...")
+    pca = PCA(maxoutdim=3)
+    pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
+    X = transform(pcamach, DataFrame(X, [:R, :G, :B])) |> matrix
+    println("Done!")
+
+    println("Training GMM models for mixtures k's from $(minimum(ks)) to $(maximum(ks))...")
+    gmmmachs = Dict{Int, GMM}()
+    for k in ks
+        gmm = GMM(k, X)
+        gmmmachs[k] = gmm
+    end
+    println("Done!")
+
+    (pcamach=pcamach, gmmmachs=gmmmachs, X=X)
+end
+
+function cluster(path::String, ::Coords; ks::UnitRange=2:2, N::Int=10_000)
+    println("Sampling image and generating feature matrix (including coords) and bands...")
+    X = extract(path, N, Coords())
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature matrix and bands...")
+    standardize!(X)
+    # standardize!(bands)
+    println("Done!")
+
+    # Do PCA and train kmed model
+    println("Performing PCA...")
+    pca = PCA(maxoutdim=3)
+    pcamach = machine(pca, DataFrame(X, [:R, :G, :B, :X, :Y])) |> fit!
+    println("Done!")
+
+    println("Training K-Medoids model for k's from $(minimum(ks)) to $(maximum(ks))...")
+    kmedmachs = Dict{Int, Machine}()
+    for k in ks
+        kmed = KMedoids(k=k)
+        kmedmachs[k] = machine(kmed, DataFrame(X, [:R, :G, :B, :X, :Y])) |> fit!
+    end
+    println("Done!")
+
+    (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
+end
+
+function cluster(path::String, ::IsLAB; ks::UnitRange=2:2, N::Int=10_000)
+    println("Sampling LAB-space image and generating feature matrix and bands...")
+    seed!(6213)
+    println("Using seed $(seed!(6213))...")
+    X = extract(path, N, IsLAB())
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature matrix...")
+    standardize!(X)
+    # standardize!(bands)
+    println("Done!")
+
+    # Do PCA and train kmed model
+    println("Performing PCA...")
+    pca = PCA(maxoutdim=3)
+    pcamach = machine(pca, DataFrame(X, [:L, :A, :B])) |> fit!
+    println("Done!")
+
+    println("Training K-Medoids model for k's from $(minimum(ks)) to $(maximum(ks))...")
+    kmedmachs = Dict{Int, Machine}()
+    for k in ks
+        kmed = KMedoids(k=k)
+        kmedmachs[k] = machine(kmed, DataFrame(X, [:L, :A, :B])) |> fit!
+    end
+    println("Done!")
+
+    (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
+end
+
+function cluster(img::Matrix{RGB{N0f8}}; ks::UnitRange=2:2, N::Int=10_000)
+    seed!(6213)
+    println("Using seed $(seed!(6213))...")
+    println("Sampling image and generating feature matrix and bands...")
+    X = extract(img, N)
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature matrix and bands...")
+    standardize!(X)
+    println("Done!")
+
+    # Do PCA and train kmed model
+    println("Performing PCA...")
+    pca = PCA(maxoutdim=3)
+    pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
+    println("Done!")
+
+    println("Training K-Medoids model for k's from $(minimum(ks)) to $(maximum(ks))...")
+    kmedmachs = Dict{Int, Machine}()
+    for k in ks
+        kmed = KMedoids(k=k)
+        kmedmachs[k] = machine(kmed, DataFrame(X, [:R, :G, :B])) |> fit!
+    end
+    println("Done!")
+
+    (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
+end
+
+function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine)
+
+    println("Extracting image bands...")
+    bands, imgbands = extract(path)
+    W, H = size(imgbands)[1:2]
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature bands...")
+    standardize!(bands)
+    println("Done!")
+
+    # Apply PCA to bands and predict labels
+    println("Appling PCA to bands of full image...")
+    pcabands = transform(pcamach, DataFrame(bands, :auto))
+    println("Calculating distances to medoids for full image")
+    dists = transform(kmedmach, pcabands)
+    println("Done!")
+
+    # Use distances to medoids to generate labels
+    println("Using distances to medoids to generate labels")
+    rowmins = argmin(Matrix(dists), dims=2)
+    labels = [CI[2] for CI in vec(rowmins)]
+    labels = reshape(labels, W, H)
+    println("Done!")
+
+    (labels=labels, img=imgbands |> toimg)
+end
+
+function classify(path::AbstractString, pcamach::Machine, gmmmach::GMM)
+
+    println("Extracting image bands...")
+    bands, imgbands = extract(path)
+    W, H = size(imgbands)[1:2]
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature bands...")
+    standardize!(bands)
+    println("Done!")
+
+    # Apply PCA to bands and predict labels
+    println("Appling PCA to bands of full image...")
+    pcabands = transform(pcamach, DataFrame(bands, :auto)) |> matrix
+    println("Done!")
+
+    # 
+    println("Using log-likelihood per Gaussian to medoids to generate labels")
+    labels = map(argmax, eachrow(llpg(gmmmach, pcabands)))
+    labels = reshape(labels, W, H)
+    println("Done!")
+
+    (labels=labels, img=imgbands |> toimg)
+end
+
+function classify(path::AbstractString, ::Coords, pcamach::Machine, kmedmach::Machine)
+
+    println("Extracting image bands (including coords)...")
+    bands, W, H = extract(path, Coords())
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature bands...")
+    standardize!(bands)
+    println("Done!")
+
+    # Apply PCA to bands and predict labels
+    println("Appling PCA to bands of full image...")
+    pcabands = transform(pcamach, DataFrame(bands, :auto))
+    println("Calculating distances to medoids for full image")
+    dists = transform(kmedmach, pcabands)
+    println("Done!")
+
+    # Use distances to medoids to generate labels
+    println("Using distances to medoids to generate labels")
+    rowmins = argmin(Matrix(dists), dims=2)
+    labels = [CI[2] for CI in vec(rowmins)]
+    labels = reshape(labels, W, H)
+    println("Done!")
+
+    (labels=labels)
+end
+
+function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine, ::IsLAB)
+
+    println("Extracting image bands (LAB space)...")
+    bands, imgbands = extract(path, IsLAB())
+    W, H = size(imgbands)[1:2]
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature bands...")
+    standardize!(bands)
+    println("Done!")
+
+    # Apply PCA to bands and predict labels
+    println("Appling PCA to bands of full image...")
+    pcabands = transform(pcamach, DataFrame(bands, :auto))
+    println("Calculating distances to medoids for full image")
+    dists = transform(kmedmach, pcabands)
+    println("Done!")
+
+    # Use distances to medoids to generate labels
+    println("Using distances to medoids to generate labels")
+    rowmins = argmin(Matrix(dists), dims=2)
+    labels = [CI[2] for CI in vec(rowmins)]
+    labels = reshape(labels, W, H)
+    println("Done!")
+
+    (labels=labels, img = imgbands |> toimg)
+end
+
+function classify(img::Matrix{RGB{N0f8}}, pcamach::Machine, kmedmach::Machine)
+
+    println("Extracting image bands...")
+    bands = extract(img)
+    W, H = size(img)
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature bands...")
+    standardize!(bands)
+    println("Done!")
+
+    # Apply PCA to bands and predict labels
+    println("Appling PCA to bands of full image...")
+    pcabands = transform(pcamach, DataFrame(bands, :auto))
+    println("Calculating distances to medoids for full image")
+    dists = transform(kmedmach, pcabands)
+    println("Done!")
+
+    # Use distances to medoids to generate labels
+    println("Using distances to medoids to generate labels")
+    rowmins = argmin(Matrix(dists), dims=2)
+    labels = [CI[2] for CI in vec(rowmins)]
+    labels = reshape(labels, W, H)
+    println("Done!")
+
+    (labels=labels)
+end
+
+function classify(img::Matrix{RGB{N0f8}}, pcamach::Machine, kmedmach::Machine, ::IsLAB)
+
+    println("Extracting image bands...")
+    bands = extract(img, IsLAB())
+    W, H = size(img)
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature bands...")
+    standardize!(bands)
+    println("Done!")
+
+    # Apply PCA to bands and predict labels
+    println("Appling PCA to bands of full image...")
+    pcabands = transform(pcamach, DataFrame(bands, :auto))
+    println("Calculating distances to medoids for full image")
+    dists = transform(kmedmach, pcabands)
+    println("Done!")
+
+    # Use distances to medoids to generate labels
+    println("Using distances to medoids to generate labels")
+    rowmins = argmin(Matrix(dists), dims=2)
+    labels = [CI[2] for CI in vec(rowmins)]
+    labels = reshape(labels, W, H)
+    println("Done!")
+
+    (labels=labels)
+end
+
+function classify(k::Int, p::String, clus::NamedTuple) 
+    classify(p, clus.pcamach, clus.kmedmachs[k])
+end
+
+function classify(k::Int, p::String, clus::NamedTuple, ::IsLAB) 
+    classify(p, clus.pcamach, clus.kmedmachs[k], IsLAB())
+end
+
+function classify(k::Int, img::Matrix{RGB{N0f8}}, clus::NamedTuple) 
+    classify(img, clus.pcamach, clus.kmedmachs[k])
+end
+
+function classify(k::Int, img::Matrix{RGB{N0f8}}, clus::NamedTuple, ::IsLAB) 
+    classify(img, clus.pcamach, clus.kmedmachs[k], IsLAB())
+end
+
+function classify(p::String, k::Int, clus::NamedTuple) 
+    classify(p, clus.pcamach, clus.gmmmachs[k])
 end

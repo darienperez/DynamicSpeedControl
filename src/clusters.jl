@@ -1,10 +1,10 @@
 # import MLJ: predict
-
 function standardize!(X::AbstractMatrix)
-    for j in 1:(size(X,2))
+    @views for j in 1:(size(X,2))
         col = X[:,j]
         μ, σ = mean(col), std(col)
-        X[:,j] = (col .- μ) ./ σ
+        col .-= μ
+        col ./= σ
     end
     return X
 end
@@ -145,54 +145,7 @@ clusters(cs::ClusteredState, k) = begin
        [Xs[ls[k] .== l, :] for l in unique(ls[k])]
 end
 
-
-# Function to cluster using a Gaussian Mixture Model (GMM)
-function cluster_gmm(init::Dict, krange)
-    # Prepare quality metrics storage
-    cluster_qualities = Dict(
-        :dunn => Float64[],
-        :silhouettes => Float64[],
-        :calinski_harabasz => Float64[],
-        :xie_beni => Float64[],
-        :davies_bouldin => Float64[]
-    )
-    labmat = MLJ.matrix(init[:machines][:pca][:transforms][:lab])
-    qidxs = [:dunn, :silhouettes, :calinski_harabasz, :xie_beni, :davies_bouldin]
-
-    # Evaluator helper
-    evaluator!(cluster_qualities::Dict, data::AbstractMatrix, qidxs, labels, centers) = begin
-        require_centers = Set([:calinski_harabasz, :xie_beni, :davies_bouldin])
-        for qidx in qidxs
-            if qidx in require_centers
-                quality = clustering_quality(data', centers, labels; quality_index=qidx, metric=SqEuclidean())
-            else
-                quality = clustering_quality(data', labels; quality_index=qidx, metric=SqEuclidean())
-            end
-            push!(cluster_qualities[qidx], quality)
-        end
-    end
-
-    for k in krange
-        # Fit GMM directly using GaussianMixtures.jl (components, data)
-        gmm_model = GMM(k, Matrix(labmat'))       # fit GMM with k components on data (samples×features)
-        labels = GaussianMixtures.assign_clusters(gmm_model, labmat')  # get hard assignments
-        centers = gmm_model.μ                      # component means
-        
-        # Compute quality metrics
-        evaluator!(cluster_qualities, labmat, qidxs, labels, centers)
-        
-        # Store the fitted GMM model
-        init[Symbol("gmm", k)] = gmm_model
-    end
-
-    # Save results back into init
-    
-    init[:gmmcluster_qualities] = cluster_qualities
-    return init
-end
-
-function evaluate_quality(
-    cs::ClusteredState;
+function evaluate_quality(cs::ClusteredState;
     qualityIdx::Symbol=:dunn,
     metric = SqEuclidean()
     )   
@@ -215,6 +168,60 @@ function evaluate_quality(
     vals
 end
 
+function qualities(cluster::NamedTuple)
+    qualIdxs = [:dunn, :silhouettes, :calinski_harabasz, :xie_beni, :davies_bouldin]
+    quals = [evaluate_quality(cluster, qualityIdx=qID) for qID in qualIdxs]
+    hcat(quals...)
+end
+
+function evaluate_quality(cluster::NamedTuple;
+    qualityIdx::Symbol=:dunn,
+    metric = SqEuclidean())   
+
+    # Transform feature matrix into PCA coordinates and swap rows with columns
+    pcaX = transform(cluster.pcamach, cluster.X) |> matrix |> permutedims
+
+    # Assess qualities for each k in the range of ks
+    qualities = []
+    for (k, kmed) in cluster.kmedmachs
+        centers = fitted_params(kmed).medoids
+        labels = kmed.report[:fit].assignments
+        if qualityIdx in (:calinski_harabasz, :xie_beni, :davies_bouldin)
+            push!(qualities, clustering_quality(
+                pcaX, centers, reshape(labels, :); quality_index=qualityIdx, metric=metric
+            ))
+        else
+            push!(qualities, clustering_quality(
+                pcaX, labels; quality_index=qualityIdx, metric=metric
+            ))
+        end
+    end
+    qualities
+end
+
+function bic(gmm::GMM, X::Matrix{Float32})
+    total_ll = llpg(gmm, X) |> sum
+    k = n_components(gmm)
+    n, d = size(X)
+    cov_params = if kind(gmm) == :full
+        k * (d*(d+1) / 2)
+    else
+        k * d
+    end
+    num_params = (k - 1) + (k * d) + cov_params
+    bic_value = -2 * total_ll + num_params * log(n)
+    bic_value
+end
+
+function evaluate_quality(cluster::NamedTuple, ::UseGMM)
+    qualities = Vector{Float32}(undef, length(cluster.gmmmachs) + 1)
+    X = cluster.X
+    for (k, gmm) in cluster.gmmmachs
+        qualities[k] = bic(gmm, X)
+    end
+    qualities[2:end]
+end
+
 function ClusterQualities(cs::ClusteredState)
     qs = []
     cqs = fieldnames(ClusterQualities)
@@ -223,4 +230,10 @@ function ClusterQualities(cs::ClusteredState)
         push!(qs, eqs)
     end
     ClusterQualities(qs[1], qs[2], qs[3], qs[4], qs[5])
+end
+
+function ksfromquals(quals::Matrix)
+    ks = hcat(sortperm.(eachcol(quals[:,1:3]), rev=true)...)
+    ks = hcat(ks, hcat(sortperm.(eachcol(quals[:,4:5]))...))
+    ks .+ 1
 end

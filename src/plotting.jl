@@ -150,7 +150,6 @@ function plot_data(X;
 
 end
 
-struct IsLAB end
 function plot_data(clustered::Dict, ::IsLAB;
     xlabel="L",
     ylabel="A",

@@ -208,6 +208,14 @@ function extract(img::Matrix{RGB{N0f8}})
     return Float32.(bands)
 end
 
+function extract(img::Matrix{RGB{N0f8}}, ::IsLAB)
+    img = Lab.(img)
+    imgbands = channelview(img) |> x -> PermutedDimsArray(x, (2,3,1))
+    W, H = size(imgbands)[1:2]
+    bands = reshape(imgbands, W*H, 3)
+    return Float32.(bands)
+end
+
 function extract(img::Matrix{RGB{N0f8}}, N::Int)
     imgbands = channelview(img) |> x -> PermutedDimsArray(x, (2,3,1))
     W, H = size(imgbands)[1:2]

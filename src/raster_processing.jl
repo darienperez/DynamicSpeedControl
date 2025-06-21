@@ -68,11 +68,10 @@ function extract(path::AbstractString, ::Coords)
         # make two 1×(H*W) vectors of coords
         Xs = repeat(xs, inner=H)     # length H*W
         Ys = repeat(ys, outer=W)     # length H*W
-        coords = hcat(Xs, Ys)
 
         imgbands = read(ds, (1,2,3))
-        bands = reshape(imgbands, W*H, 3) |> x -> hcat(x, coords)
-        (bands, W, H)
+        features = reshape(imgbands, W*H, 3) |> x -> hcat(x, Xs, Ys)
+        (Float32.(features), imgbands)
     end
 end
 
@@ -161,18 +160,16 @@ function extract(path::AbstractString, N::Int, ::Coords)
         # make two 1×(H*W) vectors of coords
         Xs = repeat(xs, inner=H)     # length H*W
         Ys = repeat(ys, outer=W)     # length H*W
-        coords = hcat(Xs, Ys)
 
         imgbands = read(ds, (1,2,3))
-        bands = reshape(imgbands, W*H, 3) |> x -> hcat(x, coords)
-        d = size(bands)[2]
-        
-        X = sample(
-            bands[findall(r -> r[1][1] != UInt8(0), Array(eachrow(bands))), :],
-            (N, d),
-            replace=false)
+        bands = reshape(imgbands, W*H, 3)
 
-        return Float32.(X)
+        nowhiteblack(r) = (r !== UInt8(0)) & (r !== UInt8(255))
+        mask = reshape(any(row -> nowhiteblack(row), bands, dims=2), :)
+        features = hcat(bands, Xs, Ys)
+        idxs = sample(findall(mask), N)
+        
+        return Float32.(features[idxs, :])
     end
 end
 

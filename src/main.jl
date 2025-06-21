@@ -205,17 +205,19 @@ function cluster(path::String, ::Coords; ks::UnitRange=2:2, N::Int=10_000)
     println("Performing PCA...")
     pca = PCA(maxoutdim=3)
     pcamach = machine(pca, DataFrame(X, [:R, :G, :B, :X, :Y])) |> fit!
+    println("Transforming features into PC space")
+    pcaX = transform(pcamach, X)
     println("Done!")
 
     println("Training K-Medoids model for k's from $(minimum(ks)) to $(maximum(ks))...")
     kmedmachs = Dict{Int, Machine}()
     for k in ks
         kmed = KMedoids(k=k)
-        kmedmachs[k] = machine(kmed, DataFrame(X, [:R, :G, :B, :X, :Y])) |> fit!
+        kmedmachs[k] = machine(kmed, pcaX) |> fit!
     end
     println("Done!")
 
-    (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
+    (pcamach=pcamach, kmedmachs=kmedmachs, pcaX=pcaX)
 end
 
 function cluster(path::String, ::IsLAB; ks::UnitRange=2:2, N::Int=10_000)
@@ -332,20 +334,21 @@ function classify(path::AbstractString, pcamach::Machine, gmmmach::GMM)
     (labels=labels, img=imgbands |> toimg)
 end
 
-function classify(path::AbstractString, ::Coords, pcamach::Machine, kmedmach::Machine)
+function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine, ::Coords)
 
     println("Extracting image bands (including coords)...")
-    bands, W, H = extract(path, Coords())
+    features, imgbands = extract(path, Coords())
+    W, H = size(imgbands)[1:2]
     println("Done!")
 
     # Standardize
     println("Standardizing feature bands...")
-    standardize!(bands)
+    standardize!(features)
     println("Done!")
 
     # Apply PCA to bands and predict labels
     println("Appling PCA to bands of full image...")
-    pcabands = transform(pcamach, DataFrame(bands, :auto))
+    pcabands = transform(pcamach, DataFrame(features, :auto))
     println("Calculating distances to medoids for full image")
     dists = transform(kmedmach, pcabands)
     println("Done!")
@@ -357,7 +360,7 @@ function classify(path::AbstractString, ::Coords, pcamach::Machine, kmedmach::Ma
     labels = reshape(labels, W, H)
     println("Done!")
 
-    (labels=labels)
+    (labels=labels, img = imgbands |> toimg)
 end
 
 function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine, ::IsLAB)
@@ -453,6 +456,10 @@ end
 
 function classify(k::Int, p::String, clus::NamedTuple, ::IsLAB) 
     classify(p, clus.pcamach, clus.kmedmachs[k], IsLAB())
+end
+
+function classify(k::Int, p::String, clus::NamedTuple, ::Coords) 
+    classify(p, clus.pcamach, clus.kmedmachs[k], Coords())
 end
 
 function classify(k::Int, img::Matrix{RGB{N0f8}}, clus::NamedTuple) 

@@ -179,7 +179,7 @@ function evaluate_quality(cluster::NamedTuple;
     metric = SqEuclidean())   
 
     # Transform feature matrix into PCA coordinates and swap rows with columns
-    pcaX = matrix(cluster.pcaX)'
+    pcaX = cluster.pcaX'
 
     # Assess qualities for each k in the range of ks
     qualities = []

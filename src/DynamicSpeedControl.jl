@@ -2,6 +2,7 @@ module DynamicSpeedControl
 # Dynamically load all modules from `src`
 # push!(LOAD_PATH, joinpath(pwd(), "src"))
 using Revise
+using AppleAccelerate
 using ArchGDAL: read, readraster,height, width, getdriver, getgeotransform, setgeotransform!,
 getproj, setproj!, create, getband, write!, nraster
 using Clustering: SqEuclidean, clustering_quality

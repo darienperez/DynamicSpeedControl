@@ -7,6 +7,7 @@ repository = "https://github.com/JuliaStats/MultivariateStats.jl.git"
 version = "0.1.0"
 
 [deps]
+AppleAccelerate = "13e28ba4-7ad8-5781-acae-3021b1ed3924"
 ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3"
 Clustering = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
 Colors = "5ae59095-9a9b-59fe-a467-6f913c188581"
@@ -25,5 +26,6 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
+AppleAccelerate = "0.4.1"
 GaussianMixtures = "0.3.13"
 Test = "1.11.0"

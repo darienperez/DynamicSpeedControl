@@ -96,7 +96,7 @@ function extract(path::AbstractString, N::Int)
         W, H = width(ds), height(ds)
         bands = reshape(imgbands, W*H, 3)
         nowhiteblack(r) = (r !== UInt8(0)) & (r !== UInt8(255))
-        idxs = reshape(any(row -> nowhiteblack(row), bands, dims=2), :)
+        idxs = reshape(all(row -> nowhiteblack(row), bands, dims=2), :)
         X = sample(
             bands[idxs, :],
             (N, 3),
@@ -136,20 +136,6 @@ function extract(path::AbstractString, blocksize::Int, N::Int)
     end # do block
 end
 
-function extract(path::AbstractString, N::Int, ::NoWhites)
-    read(path) do ds
-        imgbands = read(ds, (1,2,3))
-        W, H = width(ds), height(ds)
-        bands = reshape(imgbands, W*H, 3)
-        idxs = reshape(any(r -> r !== UInt8(255), bands, dims=2), :)
-        X = sample(
-            bands[idxs, :],
-            (N, 3),
-            replace=false)
-        return (Float32.(X), W, H)
-    end
-end
-
 function extract(path::AbstractString, N::Int, ::Coords)
     read(path) do ds
         W, H = width(ds), height(ds)
@@ -165,7 +151,7 @@ function extract(path::AbstractString, N::Int, ::Coords)
         bands = reshape(imgbands, W*H, 3)
 
         nowhiteblack(r) = (r !== UInt8(0)) & (r !== UInt8(255))
-        mask = reshape(any(row -> nowhiteblack(row), bands, dims=2), :)
+        mask = reshape(all(row -> nowhiteblack(row), bands, dims=2), :)
         features = hcat(bands, Xs, Ys)
         idxs = sample(findall(mask), N)
         
@@ -187,14 +173,11 @@ function extract(path::AbstractString, N::Int, ::IsLAB)
         println("feature depth is $d")
 
         println("sampling bands $N times after filtering black background")
-        nowhiteblack(r) = (r !== Float32(0)) & (r !== Float32(100))
-        idxs = reshape(any(row -> nowhiteblack(row), bands, dims=2), :)
-        X = sample(
-            bands[idxs, :],
-            (N, d),
-            replace=false)
-
-        return X
+        nowhiteblack(r) = (r !== UInt8(0)) & (r !== UInt8(255))
+        mask = reshape(all(row -> nowhiteblack(row), bands, dims=2), :)
+        idxs = sample(findall(mask), N)
+       
+        return Float32.(bands[idxs, :])
     end
 end
 
@@ -218,7 +201,7 @@ function extract(img::Matrix{RGB{N0f8}}, N::Int)
     W, H = size(imgbands)[1:2]
     bands = reshape(imgbands, W*H, 3)
     nowhiteblack(r) = (r !== UInt8(0)/UInt8(255)) & (r !== UInt8(255)/UInt8(255))
-        idxs = reshape(any(row -> nowhiteblack(row), bands, dims=2), :)
+        idxs = reshape(all(row -> nowhiteblack(row), bands, dims=2), :)
         X = sample(
             bands[idxs, :],
             (N, 3),
@@ -229,7 +212,16 @@ end
 function toimg(imgbands::Array{UInt8, 3})
     # Convert to Matrix{RGB{N0f8}} and swap view of img dimensions for colorview()
     img = N0f8.(imgbands./255) |> x -> PermutedDimsArray(x, (3,1,2))
+    GC.gc()
     colorview(RGB, img) 
+end
+
+function toimg(path::AbstractString)
+    read(path) do ds
+        imgbands = read(ds, (1,2,3))
+        img = toimg(imgbands)
+        return img
+    end 
 end
 
 # extract(clustered::Dict) = begin

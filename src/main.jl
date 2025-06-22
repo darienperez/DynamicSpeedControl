@@ -221,6 +221,8 @@ function cluster(path::String, ::Coords; ks::UnitRange=2:2, N::Int=10_000)
 end
 
 function cluster(path::String, ::IsLAB; ks::UnitRange=2:2, N::Int=10_000)
+    clusters = nothing
+    GC.gc()
     println("Sampling LAB-space image and generating feature matrix and bands...")
     seed!(6213)
     println("Using seed $(seed!(6213))...")
@@ -236,18 +238,22 @@ function cluster(path::String, ::IsLAB; ks::UnitRange=2:2, N::Int=10_000)
     # Do PCA and train kmed model
     println("Performing PCA...")
     pca = PCA(maxoutdim=3)
-    pcamach = machine(pca, DataFrame(X, [:L, :A, :B])) |> fit!
+    pcamach = machine(pca, table(X)) |> fit!
+    println("Transforming features into PC space")
+    pcaX = transform(pcamach, X)
+    GC.gc()
     println("Done!")
 
     println("Training K-Medoids model for k's from $(minimum(ks)) to $(maximum(ks))...")
     kmedmachs = Dict{Int, Machine}()
     for k in ks
         kmed = KMedoids(k=k)
-        kmedmachs[k] = machine(kmed, DataFrame(X, [:L, :A, :B])) |> fit!
+        kmedmachs[k] = machine(kmed, pcaX) |> fit!
     end
     println("Done!")
-
-    (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
+    
+    pcaX = matrix(pcaX); GC.gc()
+    (pcamach=pcamach, kmedmachs=kmedmachs, pcaX=pcaX)
 end
 
 function cluster(img::Matrix{RGB{N0f8}}; ks::UnitRange=2:2, N::Int=10_000)
@@ -364,7 +370,8 @@ function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine, ::C
 end
 
 function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine, ::IsLAB)
-
+    results = nothing
+    GC.gc()
     println("Extracting image bands (LAB space)...")
     bands, imgbands = extract(path, IsLAB())
     W, H = size(imgbands)[1:2]
@@ -377,19 +384,27 @@ function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine, ::I
 
     # Apply PCA to bands and predict labels
     println("Appling PCA to bands of full image...")
-    pcabands = transform(pcamach, DataFrame(bands, :auto))
+    pcabands = bands = transform(pcamach, bands)
+    GC.gc()
     println("Calculating distances to medoids for full image")
-    dists = transform(kmedmach, pcabands)
+    dists = transform(kmedmach, pcabands) |> matrix
+    pcabands = nothing
+    GC.gc()
     println("Done!")
 
     # Use distances to medoids to generate labels
     println("Using distances to medoids to generate labels")
-    rowmins = argmin(Matrix(dists), dims=2)
-    labels = [CI[2] for CI in vec(rowmins)]
+    labels = Int8.(argmin.(eachrow(dists)))
+    dists = nothing
+    GC.gc()
     labels = reshape(labels, W, H)
     println("Done!")
 
-    (labels=labels, img = imgbands |> toimg)
+    println("Producing image from imgbands...")
+    img = imgbands |> toimg
+    GC.gc()
+
+    (labels=labels, img=img)
 end
 
 function classify(img::Matrix{RGB{N0f8}}, pcamach::Machine, kmedmach::Machine)

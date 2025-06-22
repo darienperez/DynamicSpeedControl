@@ -95,7 +95,7 @@ function extract(path::AbstractString, N::Int)
         imgbands = read(ds, (1,2,3))
         W, H = width(ds), height(ds)
         bands = reshape(imgbands, W*H, 3)
-        nowhiteblack(r) = (r !== UInt8(0)) & (r !== UInt8(255))
+        nowhiteblack(r) = (r != UInt8(0)) & (r != UInt8(255))
         idxs = reshape(all(row -> nowhiteblack(row), bands, dims=2), :)
         X = sample(
             bands[idxs, :],
@@ -150,7 +150,7 @@ function extract(path::AbstractString, N::Int, ::Coords)
         imgbands = read(ds, (1,2,3))
         bands = reshape(imgbands, W*H, 3)
 
-        nowhiteblack(r) = (r !== UInt8(0)) & (r !== UInt8(255))
+        nowhiteblack(r) = (r != UInt8(0)) & (r != UInt8(255))
         mask = reshape(all(row -> nowhiteblack(row), bands, dims=2), :)
         features = hcat(bands, Xs, Ys)
         idxs = sample(findall(mask), N)
@@ -173,7 +173,7 @@ function extract(path::AbstractString, N::Int, ::IsLAB)
         println("feature depth is $d")
 
         println("sampling bands $N times after filtering black background")
-        nowhiteblack(r) = (r !== UInt8(0)) & (r !== UInt8(255))
+        nowhiteblack(r) = (r != UInt8(0)) & (r != UInt8(255))
         mask = reshape(all(row -> nowhiteblack(row), bands, dims=2), :)
         idxs = sample(findall(mask), N)
        

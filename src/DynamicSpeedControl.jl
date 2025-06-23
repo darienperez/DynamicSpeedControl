@@ -4,14 +4,13 @@ module DynamicSpeedControl
 using Revise
 using AppleAccelerate
 using ArchGDAL: read, readraster,height, width, getdriver, getgeotransform, setgeotransform!,
-getproj, setproj!, create, getband, write!, nraster
+getproj, setproj!, create, getband, write!, nraster, IDataset
 using Clustering: SqEuclidean, clustering_quality
-#using ColorTypes 
-using Colors: RGB, N0f8
+#using ColorTypes
 using DataFrames: DataFrame
 #using GLMakie
 using GaussianMixtures: GMM, em!, llpg, loglikelihood, n_components, kind
-using Images: colorview, channelview, Lab
+using Images: colorview, channelview, Lab, RGB, RGBA, N0f8
 #using Interpolations
 #using LinearAlgebra
 import MLJ: predict, Machine, machine, fit!, transform, matrix, table, fitted_params, @load

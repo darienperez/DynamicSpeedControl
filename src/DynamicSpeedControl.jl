@@ -7,13 +7,14 @@ using ArchGDAL: read, readraster,height, width, getdriver, getgeotransform, setg
 getproj, setproj!, create, getband, write!, nraster, IDataset
 using Clustering: SqEuclidean, clustering_quality
 #using ColorTypes
-using DataFrames: DataFrame
+using DataFrames: DataFrame, transform!, nrow, ncol, select!, Not, unique!, ByRow
 #using GLMakie
 #using GaussianMixtures: GMM, em!, llpg, loglikelihood, n_components, kind
 using Images: colorview, channelview, Lab, RGB, RGBA, N0f8
 #using Interpolations
+using LazIO
 #using LinearAlgebra
-import MLJ: predict, Machine, machine, fit!, transform, matrix, table, fitted_params, @load
+import MLJ: Standardizer, predict, Machine, machine, fit!, transform, matrix, table, fitted_params, @load
 KMedoids = @load KMedoids pkg=Clustering verbosity=0
 PCA = @load PCA pkg=MultivariateStats verbosity=0
 #using Plots
@@ -21,7 +22,7 @@ PCA = @load PCA pkg=MultivariateStats verbosity=0
 #using PlutoPlotly
 using StatsBase: sample, mean, std, Random.seed!
 #using Statistics
-#using FileIO
+using FileIO
 
 export 
 
@@ -58,6 +59,18 @@ evaluate_quality,
 qualities,
 ksfromquals,
 
+# Working with LiDAR data
+laspath,
+trainKmed,
+trainPCA,
+write_las,
+make_Points3!,
+make_df,
+transform_df!,
+sample_df,
+classify_las,
+change_lables!,
+
 # SpeedMapping
 map_speeds,
 
@@ -78,6 +91,7 @@ ContourGenerator
 
 # src files
 include(joinpath(@__DIR__, "main.jl"))
+include(joinpath(@__DIR__, "las.jl"))
 include(joinpath(@__DIR__, "clusters.jl"))
 include(joinpath(@__DIR__, "raster_processing.jl"))
 include(joinpath(@__DIR__, "speed_mapping.jl"))

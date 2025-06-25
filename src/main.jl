@@ -314,32 +314,6 @@ function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine)
     (labels=labels, img=imgbands |> toimg)
 end
 
-# function classify(path::AbstractString, pcamach::Machine, gmmmach::GMM)
-
-#     println("Extracting image bands...")
-#     bands, imgbands = extract(path)
-#     W, H = size(imgbands)[1:2]
-#     println("Done!")
-
-#     # Standardize
-#     println("Standardizing feature bands...")
-#     standardize!(bands)
-#     println("Done!")
-
-#     # Apply PCA to bands and predict labels
-#     println("Appling PCA to bands of full image...")
-#     pcabands = transform(pcamach, DataFrame(bands, :auto)) |> matrix
-#     println("Done!")
-
-#     # 
-#     println("Using log-likelihood per Gaussian to medoids to generate labels")
-#     labels = map(argmax, eachrow(llpg(gmmmach, pcabands)))
-#     labels = reshape(labels, W, H)
-#     println("Done!")
-
-#     (labels=labels, img=imgbands |> toimg)
-# end
-
 function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine, ::Coords)
 
     println("Extracting image bands (including coords)...")

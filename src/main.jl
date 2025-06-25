@@ -162,33 +162,33 @@ function cluster(::NoWhites, path::String; ks::UnitRange=2:2, N::Int=10_000)
     (pcamach=pcamach, kmedmachs=kmedmachs, X=X)
 end
 
-function cluster(path::String, ::UseGMM; ks::UnitRange=2:2, N::Int=10_000)
-    println("Sampling image and generating feature matrix and bands...")
-    X, _ = extract(path, N)
-    println("Done!")
+# function cluster(path::String, ::UseGMM; ks::UnitRange=2:2, N::Int=10_000)
+#     println("Sampling image and generating feature matrix and bands...")
+#     X, _ = extract(path, N)
+#     println("Done!")
 
-    # Standardize
-    println("Standardizing feature matrix and bands...")
-    standardize!(X)
-    println("Done!")
+#     # Standardize
+#     println("Standardizing feature matrix and bands...")
+#     standardize!(X)
+#     println("Done!")
 
-    # Do PCA and train kmed model
-    println("Performing PCA...")
-    pca = PCA(maxoutdim=3)
-    pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
-    X = transform(pcamach, DataFrame(X, [:R, :G, :B])) |> matrix
-    println("Done!")
+#     # Do PCA and train kmed model
+#     println("Performing PCA...")
+#     pca = PCA(maxoutdim=3)
+#     pcamach = machine(pca, DataFrame(X, [:R, :G, :B])) |> fit!
+#     X = transform(pcamach, DataFrame(X, [:R, :G, :B])) |> matrix
+#     println("Done!")
 
-    println("Training GMM models for mixtures k's from $(minimum(ks)) to $(maximum(ks))...")
-    gmmmachs = Dict{Int, GMM}()
-    for k in ks
-        gmm = GMM(k, X)
-        gmmmachs[k] = gmm
-    end
-    println("Done!")
+#     println("Training GMM models for mixtures k's from $(minimum(ks)) to $(maximum(ks))...")
+#     gmmmachs = Dict{Int, GMM}()
+#     for k in ks
+#         gmm = GMM(k, X)
+#         gmmmachs[k] = gmm
+#     end
+#     println("Done!")
 
-    (pcamach=pcamach, gmmmachs=gmmmachs, X=X)
-end
+#     (pcamach=pcamach, gmmmachs=gmmmachs, X=X)
+# end
 
 function cluster(path::String, ::Coords; ks::UnitRange=2:2, N::Int=10_000)
     println("Sampling image and generating feature matrix (including coords) and bands...")
@@ -314,31 +314,31 @@ function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine)
     (labels=labels, img=imgbands |> toimg)
 end
 
-function classify(path::AbstractString, pcamach::Machine, gmmmach::GMM)
+# function classify(path::AbstractString, pcamach::Machine, gmmmach::GMM)
 
-    println("Extracting image bands...")
-    bands, imgbands = extract(path)
-    W, H = size(imgbands)[1:2]
-    println("Done!")
+#     println("Extracting image bands...")
+#     bands, imgbands = extract(path)
+#     W, H = size(imgbands)[1:2]
+#     println("Done!")
 
-    # Standardize
-    println("Standardizing feature bands...")
-    standardize!(bands)
-    println("Done!")
+#     # Standardize
+#     println("Standardizing feature bands...")
+#     standardize!(bands)
+#     println("Done!")
 
-    # Apply PCA to bands and predict labels
-    println("Appling PCA to bands of full image...")
-    pcabands = transform(pcamach, DataFrame(bands, :auto)) |> matrix
-    println("Done!")
+#     # Apply PCA to bands and predict labels
+#     println("Appling PCA to bands of full image...")
+#     pcabands = transform(pcamach, DataFrame(bands, :auto)) |> matrix
+#     println("Done!")
 
-    # 
-    println("Using log-likelihood per Gaussian to medoids to generate labels")
-    labels = map(argmax, eachrow(llpg(gmmmach, pcabands)))
-    labels = reshape(labels, W, H)
-    println("Done!")
+#     # 
+#     println("Using log-likelihood per Gaussian to medoids to generate labels")
+#     labels = map(argmax, eachrow(llpg(gmmmach, pcabands)))
+#     labels = reshape(labels, W, H)
+#     println("Done!")
 
-    (labels=labels, img=imgbands |> toimg)
-end
+#     (labels=labels, img=imgbands |> toimg)
+# end
 
 function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine, ::Coords)
 

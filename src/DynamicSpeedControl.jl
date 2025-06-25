@@ -9,7 +9,7 @@ using Clustering: SqEuclidean, clustering_quality
 #using ColorTypes
 using DataFrames: DataFrame
 #using GLMakie
-using GaussianMixtures: GMM, em!, llpg, loglikelihood, n_components, kind
+#using GaussianMixtures: GMM, em!, llpg, loglikelihood, n_components, kind
 using Images: colorview, channelview, Lab, RGB, RGBA, N0f8
 #using Interpolations
 #using LinearAlgebra

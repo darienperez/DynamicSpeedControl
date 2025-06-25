@@ -42,6 +42,13 @@ function load_raster_data(path::AbstractString)
     end
 end
 
+function load_data(p::String)
+    read(p) do ds 
+        bands = read(ds)
+        return bands=bands
+    end
+end
+
 function sample_pp(X::AbstractMatrix; N::Int = 10_000)
     rng = seed!(123)
     # 1) pick N random indices without replacement

@@ -11,6 +11,9 @@ using DataFrames: DataFrame, transform!, nrow, ncol, select!, Not, unique!, ByRo
 #using GLMakie
 #using GaussianMixtures: GMM, em!, llpg, loglikelihood, n_components, kind
 using Images: colorview, channelview, Lab, RGB, RGBA, N0f8
+cyan = RGB(0,1,1); yellow = RGB(1,1,0); magenta = RGB(1,0,1);
+red = RGB(1,0,0); blue = RGB(0,0,1); green = RGB(0,1,0); white = RGB(1,1,1);
+black = RGB(0,0,0)
 #using Interpolations
 using LazIO
 #using LinearAlgebra
@@ -24,6 +27,15 @@ using StatsBase: sample, mean, std, Random.seed!
 #using Statistics
 using FileIO
 
+# src files
+include(joinpath(@__DIR__, "main.jl"))
+include(joinpath(@__DIR__, "las.jl"))
+include(joinpath(@__DIR__, "clusters.jl"))
+include(joinpath(@__DIR__, "raster_processing.jl"))
+include(joinpath(@__DIR__, "speed_mapping.jl"))
+include(joinpath(@__DIR__, "trajectory_planning.jl"))
+include(joinpath(@__DIR__, "plotting.jl"))
+
 export 
 
 # Workflow
@@ -36,11 +48,11 @@ Coords,
 UseGMM,
 
 # RasterProcessing
+cyan, yellow, magenta, red, blue, green, white, black
 PixelProcessor,
 sample_pp,
 load_raster_data,
 load_data,
-sample_lab_pixels,
 apply_filter!,
 segment,
 extract,
@@ -57,7 +69,7 @@ ClusterQualities,
 cluster,
 clusters,
 standardize!,
-bic,
+# bic,
 evaluate_quality,
 qualities,
 ksfromquals,
@@ -67,12 +79,12 @@ laspath,
 trainKmed,
 trainPCA,
 write_las,
-make_Points3!,
+# make_Points3!,
 make_df,
 transform_df!,
 sample_df,
 classify_las,
-change_lables!,
+change_labels!,
 
 # SpeedMapping
 map_speeds,
@@ -91,14 +103,4 @@ Is2D,
 waypoints, 
 LawnMowerGenerator, 
 ContourGenerator
-
-# src files
-include(joinpath(@__DIR__, "main.jl"))
-include(joinpath(@__DIR__, "las.jl"))
-include(joinpath(@__DIR__, "clusters.jl"))
-include(joinpath(@__DIR__, "raster_processing.jl"))
-include(joinpath(@__DIR__, "speed_mapping.jl"))
-include(joinpath(@__DIR__, "trajectory_planning.jl"))
-include(joinpath(@__DIR__, "plotting.jl"))
-
 end

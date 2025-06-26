@@ -139,11 +139,11 @@ function cluster(init::Dict, krange; colorspace=:lab)
     clustered
 end
 
-clusters(cs::ClusteredState, k) = begin
-       ls = cs.labels
-       Xs = transform(cs.pca, cs.sampled_features)
-       [Xs[ls[k] .== l, :] for l in unique(ls[k])]
-end
+# clusters(cs::ClusteredState, k) = begin
+#        ls = cs.labels
+#        Xs = transform(cs.pca, cs.sampled_features)
+#        [Xs[ls[k] .== l, :] for l in unique(ls[k])]
+# end
 
 function evaluate_quality(cs::ClusteredState;
     qualityIdx::Symbol=:dunn,

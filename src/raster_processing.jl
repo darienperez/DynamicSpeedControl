@@ -45,9 +45,13 @@ end
 function load_data(p::String)
     read(p) do ds 
         bands = read(ds)
+        bands = reshape(bands, width(ds)*height(ds), nraster(ds))
+        bands = DataFrame(bands, [:r,:g,:b,:a])
         return bands=bands
     end
 end
+
+
 
 function sample_pp(X::AbstractMatrix; N::Int = 10_000)
     rng = seed!(123)
@@ -216,9 +220,22 @@ function extract(img::Matrix{RGB{N0f8}}, N::Int)
         return Float32.(X)
 end
 
+function filter_bg(bands::Matrix{UInt8})
+    mask = all(bands[:, 4] .!= 0x00, dims=2)
+    findall(mask)
+end
+
+function apply_filter!(bands::Matrix{UInt8}, idxs)
+    println("Applying filter to bands..")
+    filtered = bands[idxs, :]; GC.gc()
+    println("Done!")
+    bands = filtered
+    return bands
+end
+
 function toimg(imgbands::Array{UInt8, 3})
     # Convert to Matrix{RGB{N0f8}} and swap view of img dimensions for colorview()
-    img = N0f8.(imgbands./255) |> x -> PermutedDimsArray(x, (3,1,2))
+    img = N0f8.(imgbands./255) |> x -> PermutedDimsArray(x, (3,2,1))
     GC.gc()
     colorview(RGB, img) 
 end
@@ -230,20 +247,6 @@ function toimg(path::AbstractString)
         return img
     end 
 end
-
-# extract(clustered::Dict) = begin
-#     img = clustered[:raster_data].img
-#     M = [clustered[:segs][c].labels_mat for c in keys(clustered[:segs])]
-#     pixels = [
-#         # for each matrix and each label…
-#         ifelse.(mat .== label,           # mask: H×W of Bool
-#                 img,                     # keep original pixel where mask==true
-#                 zero(eltype(img)))      # else fill with “black” (zero of same type)
-#         for mat   in M
-#         for label in unique(mat)         # or minimum(mat):maximum(mat)
-#     ]
-#     pixels
-# end
 
 function segment(clustered::Dict; colorspace=:lab, kmed = :kmedoids2)
     img = clustered[:raster_data].img
@@ -322,6 +325,10 @@ function saveGTiff(orthopath::String, inraspath::String, outraspath::String)
             end
         end
     end
+end
+
+function saveGTiff(orthopath::String, inraspath::String)
+    saveGTiff(orthopath, inraspath, inraspath)
 end
 
 function lengths(results::NamedTuple, cluster::NamedTuple)

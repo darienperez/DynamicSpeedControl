@@ -335,3 +335,10 @@ function lengths(results::NamedTuple, cluster::NamedTuple)
     ls = 1:length(cluster.kmedmachs)
     [length(results.img[results.labels .== l]) for l in ls]
 end
+
+function repair!(img, results, l)
+    ls = results.labels
+    img[ls .== l] .= results.img[ls .== l];
+end
+
+getdoids(k::Int, clus::NamedTuple) = clus.kmedmachs[k].fitresult[1]

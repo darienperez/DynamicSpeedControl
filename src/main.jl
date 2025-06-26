@@ -348,7 +348,7 @@ function classify(path::AbstractString, pcamach::Machine, kmedmach::Machine, ::I
     GC.gc()
     println("Extracting image bands (LAB space)...")
     bands, imgbands = extract(path, IsLAB())
-    W, H = size(imgbands)[1:2]
+    H, W = size(imgbands)[1:2]
     println("Done!")
 
     # Standardize

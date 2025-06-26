@@ -41,4 +41,24 @@ tf3path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions
 
 tf4path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/TF/TF_ortho_GV_2023_03_01.tif"
 
+hb1path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/Orthos/HB/HB_ortho_MR_2025_01_03.tif"
+
+hb2path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/Orthos/HB/HB_ortho_MR_2025_01_30.tif"
+
+hb3path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/Orthos/HB/HB_ortho_MR_2025_02_05.tif"
+
+hb4path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/Orthos/HB/HB_ortho_MR_2025_03_03.tif"
+
+hb5path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/Orthos/HB/HB_ortho_MR_2025_03_11.tif"
+
+hb6path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/Orthos/HB/HB_ortho_MR_2025_03_14.tif"
+
+hb7path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/Orthos/HB/HB_ortho_MR_2025_03_27.tif"
+
+hb8path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/Orthos/HB/HB_ortho_MR_2025_04_01.tif"
+
+hb9path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/Orthos/HB/HB_ortho_MR_2025_04_10.tif"
+
+hb10path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/Orthos/HB/HB_ortho_MR_2025_04_25.tif"
+
 outpath = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/kmedoids/outputs/"

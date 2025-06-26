@@ -48,7 +48,7 @@ Coords,
 UseGMM,
 
 # RasterProcessing
-cyan, yellow, magenta, red, blue, green, white, black
+cyan, yellow, magenta, red, blue, green, white, black,
 PixelProcessor,
 sample_pp,
 load_raster_data,
@@ -67,7 +67,7 @@ lengths,
 ClusteredState,
 ClusterQualities,
 cluster,
-clusters,
+# clusters,
 standardize!,
 # bic,
 evaluate_quality,

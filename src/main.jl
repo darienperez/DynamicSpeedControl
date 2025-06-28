@@ -463,9 +463,11 @@ function classify(p::String, k::Int, clus::NamedTuple)
     classify(p, clus.pcamach, clus.gmmmachs[k])
 end
 
-function postprocess(results::NamedTuple)
+function postprocess(results::NamedTuple, clust::NamedTuple)
+    
     img = results.img |> copy
     ls = results.labels
+    l = eachindex(clus.kmedmachs)
 
     
 end

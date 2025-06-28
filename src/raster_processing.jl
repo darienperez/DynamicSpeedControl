@@ -340,9 +340,3 @@ function repair!(img, results, l)
     ls = results.labels
     img[ls .== l] .= results.img[ls .== l];
 end
-
-getdoids(k::Int, clus::NamedTuple) = clus.kmedmachs[k].fitresult[1]
-
-medoid_mags(k::Int, clus::NamedTuple) = map(x -> sqrt(sum(abs2, x)), eachcol(getdoids(k, clus)))
-
-closest_clusts(medoid_dists::Vector) = sortperm(medoid_dists)

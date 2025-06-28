@@ -443,7 +443,8 @@ function classify(k::Int, p::String, clus::NamedTuple)
     classify(p, clus.pcamach, clus.kmedmachs[k])
 end
 
-function classify(k::Int, p::String, clus::NamedTuple, ::IsLAB) 
+function classify(k::Int, p::String, clus::NamedTuple, ::IsLAB)
+    # sort_medoids!(clus) 
     classify(p, clus.pcamach, clus.kmedmachs[k], IsLAB())
 end
 
@@ -463,7 +464,12 @@ function classify(p::String, k::Int, clus::NamedTuple)
     classify(p, clus.pcamach, clus.gmmmachs[k])
 end
 
-function postprocess(results::NamedTuple, clust::NamedTuple)
+function process(p::String, N::Int=N)
+    clusters = cluster(p, IsLAB(), ks=2:12, N=N)
+    ks = qualities(clusters) |> ksfromquals
+    return clusters, ks
+end
+function postprocess(clust::NamedTuple)
     
     img = results.img |> copy
     ls = results.labels

@@ -64,6 +64,8 @@ NoWhites,
 lengths,
 repair!,
 getdoids,
+medoid_mags,
+closest_clusts,
 
 # Clustering
 ClusteredState,

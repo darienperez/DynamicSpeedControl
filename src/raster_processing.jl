@@ -332,8 +332,8 @@ function saveGTiff(orthopath::String, inraspath::String)
 end
 
 function lengths(results::NamedTuple, cluster::NamedTuple)
-    ls = 1:length(cluster.kmedmachs)
-    [length(results.img[results.labels .== l]) for l in ls] ./ 1e6
+    lns = 1:length(cluster.kmedmachs) + 1
+    [length(results.img[results.labels .== l]) for l in lns] ./ 1e6
 end
 
 function repair!(img, results, l)

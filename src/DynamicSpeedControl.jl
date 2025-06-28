@@ -62,6 +62,8 @@ densities,
 saveGTiff,
 NoWhites,
 lengths,
+repair!,
+getdoids,
 
 # Clustering
 ClusteredState,

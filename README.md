@@ -61,4 +61,8 @@ hb9path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions
 
 hb10path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/Orthos/HB/HB_ortho_MR_2025_04_25.tiff"
 
+cl1path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/KF-CL-1/2024-25/processed/KF-CL-1_20241223T193645.jpg"
+
+cl2path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/4WS3-A (WS3-H-M-M)/2024-25/processed/WS3-H-M-M_20241128T162849.jpg"
+
 outpath = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/kmedoids/outputs/"

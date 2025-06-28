@@ -65,7 +65,9 @@ lengths,
 repair!,
 getdoids,
 medoid_mags,
-closest_clusts,
+closest_clusters,
+sorted_medoids!,
+sort_medoids!,
 
 # Clustering
 ClusteredState,

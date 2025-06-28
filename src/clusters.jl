@@ -178,6 +178,7 @@ function evaluate_quality(cluster::NamedTuple;
     qualityIdx::Symbol=:dunn,
     metric = SqEuclidean())   
 
+    sort_medoids!(cluster)
     # Transform feature matrix into PCA coordinates and swap rows with columns
     pcaX = cluster.pcaX'
 
@@ -236,4 +237,30 @@ function ksfromquals(quals::Matrix)
     ks = hcat(sortperm.(eachcol(quals[:,1:3]), rev=true)...)
     ks = hcat(ks, hcat(sortperm.(eachcol(quals[:,4:5]))...))
     ks .+ 1
+end
+
+getdoids(k::Int, clus::NamedTuple) = clus.kmedmachs[k].fitresult[1]
+
+medoid_mags(k::Int, clus::NamedTuple) = map(x -> sqrt(sum(abs2, x)), eachcol(getdoids(k, clus)))
+
+# closest_clusts(k::Int, clus::NamedTuple) = sortperm(medoid_mags(k::Int, clus::NamedTuple))
+
+closest_clusters(doidmags::Vector) = sortperm(doidmags)
+
+sorted_medoids!(k::Int, sorted_doids::Dict, clus::NamedTuple) = begin 
+    clus.kmedmachs[k].fitresult[1][:] = clus.kmedmachs[k].fitresult[1][:,sorted_doids[k]]
+end
+
+function sort_medoids!(clus::NamedTuple)
+    doidmags = Dict()
+    sorted_doids = Dict()
+    for k in keys(clus.kmedmachs)
+        doidmags[k] = medoid_mags(k, clus)
+    end
+    for k in keys(clus.kmedmachs)
+        sorted_doids[k] = closest_clusters(doidmags[k])
+    end
+    for k in keys(clus.kmedmachs)
+        sorted_medoids!(k, sorted_doids, clus)
+    end
 end

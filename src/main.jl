@@ -34,6 +34,8 @@ struct IsLAB end
 
 struct UseDict end
 
+struct Sorted end
+
 struct UseGMM end
 
 struct NoWhites end
@@ -464,12 +466,18 @@ function classify(p::String, k::Int, clus::NamedTuple)
     classify(p, clus.pcamach, clus.gmmmachs[k])
 end
 
-function process(p::String, N::Int=N)
-    clusters = cluster(p, IsLAB(), ks=2:12, N=N)
-    ks = qualities(clusters) |> ksfromquals
-    return clusters, ks
+function train(p::String; ks=2:12, N::Int=10_000)
+    clusters = cluster(p, IsLAB(), ks=ks, N=N)
+    kᵒᵖᵗ = qualities(clusters) |> ksfromquals
+    return (clusters=clusters, kᵒᵖᵗ=kᵒᵖᵗ)
 end
-function postprocess(clust::NamedTuple)
+
+function sort_clusters!(clusters::NamedTuple)
+    ks = qualities(clusters, Sorted()) |> ksfromquals
+    return ks=ks
+end
+
+function postprocess(results::NamedTuple, clust::NamedTuple)
     
     img = results.img |> copy
     ls = results.labels

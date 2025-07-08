@@ -46,6 +46,9 @@ InitState,
 UseDict,
 Coords,
 UseGMM,
+train,
+sort_clusters!,
+postprocess,
 
 # RasterProcessing
 cyan, yellow, magenta, red, blue, green, white, black,
@@ -79,6 +82,7 @@ standardize!,
 evaluate_quality,
 qualities,
 ksfromquals,
+Sorted,
 
 # Working with LiDAR data
 laspath,

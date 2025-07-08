@@ -174,7 +174,38 @@ function qualities(cluster::NamedTuple)
     hcat(quals...)
 end
 
+function qualities(cluster::NamedTuple, ::Sorted)
+    qualIdxs = [:dunn, :silhouettes, :calinski_harabasz, :xie_beni, :davies_bouldin]
+    quals = [evaluate_quality(cluster, Sorted(), qualityIdx=qID) for qID in qualIdxs]
+    hcat(quals...)
+end
+
 function evaluate_quality(cluster::NamedTuple;
+    qualityIdx::Symbol=:dunn,
+    metric = SqEuclidean())   
+
+    # Transform feature matrix into PCA coordinates and swap rows with columns
+    pcaX = cluster.pcaX'
+
+    # Assess qualities for each k in the range of ks
+    qualities = []
+    for (k, kmed) in cluster.kmedmachs
+        centers = fitted_params(kmed).medoids
+        labels = kmed.report[:fit].assignments
+        if qualityIdx in (:calinski_harabasz, :xie_beni, :davies_bouldin)
+            push!(qualities, clustering_quality(
+                pcaX, centers, reshape(labels, :); quality_index=qualityIdx, metric=metric
+            ))
+        else
+            push!(qualities, clustering_quality(
+                pcaX, labels; quality_index=qualityIdx, metric=metric
+            ))
+        end
+    end
+    qualities
+end
+
+function evaluate_quality(cluster::NamedTuple, ::Sorted;
     qualityIdx::Symbol=:dunn,
     metric = SqEuclidean())   
 

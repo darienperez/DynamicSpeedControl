@@ -472,6 +472,12 @@ function train(p::String; ks=2:12, N::Int=10_000)
     return (clusters=clusters, kᵒᵖᵗ=kᵒᵖᵗ)
 end
 
+function train(p::String, ::Sorted; ks=2:12, N::Int=10_000)
+    clusters = cluster(p, IsLAB(), ks=ks, N=N)
+    kᵒᵖᵗ = qualities(clusters, Sorted()) |> ksfromquals
+    return (clusters=clusters, kᵒᵖᵗ=kᵒᵖᵗ)
+end
+
 function sort_clusters!(clusters::NamedTuple)
     ks = qualities(clusters, Sorted()) |> ksfromquals
     return ks=ks

@@ -220,6 +220,16 @@ function extract(img::Matrix{RGB{N0f8}}, N::Int)
         return Float32.(X)
 end
 
+function sampler(paths::Vector{String}, N::Int)
+    sample_bag = []
+    for path in paths
+        samples = extract(path, N, IsLAB())
+        push!(sample_bag, samples)
+    end
+    println("Done!")
+    return vcat(sample_bag...)
+end
+
 function filter_bg(bands::Matrix{UInt8})
     mask = all(bands[:, 4] .!= 0x00, dims=2)
     findall(mask)

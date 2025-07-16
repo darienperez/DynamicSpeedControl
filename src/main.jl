@@ -40,6 +40,8 @@ struct UseGMM end
 
 struct NoWhites end
 
+struct SampleBag end
+
 function initialize(;path::Union{AbstractString, Nothing}=nothing)
     if isnothing(path)
         path = "/Users/darien/Desktop/Academia/Research/UAV Applications/Dr. Jacob's Research/Code/Julia/DynamicSpeedControl/data/rasters/processed/ortho_2_20_2021_uncorrected_6348_NAD83_19N.tif"
@@ -229,6 +231,42 @@ function cluster(path::String, ::IsLAB; ks::UnitRange=2:2, N::Int=10_000)
     seed!(6213)
     println("Using seed $(seed!(6213))...")
     X = extract(path, N, IsLAB())
+    println("Done!")
+
+    # Standardize
+    println("Standardizing feature matrix...")
+    standardize!(X)
+    # standardize!(bands)
+    println("Done!")
+
+    # Do PCA and train kmed model
+    println("Performing PCA...")
+    pca = PCA(maxoutdim=3)
+    pcamach = machine(pca, table(X)) |> fit!
+    println("Transforming features into PC space")
+    pcaX = transform(pcamach, X)
+    GC.gc()
+    println("Done!")
+
+    println("Training K-Medoids model for k's from $(minimum(ks)) to $(maximum(ks))...")
+    kmedmachs = Dict{Int, Machine}()
+    for k in ks
+        kmed = KMedoids(k=k)
+        kmedmachs[k] = machine(kmed, pcaX) |> fit!
+    end
+    println("Done!")
+    
+    pcaX = matrix(pcaX); GC.gc()
+    (pcamach=pcamach, kmedmachs=kmedmachs, pcaX=pcaX)
+end
+
+function cluster(paths::Vector{String}, ::IsLAB; ks::UnitRange=2:2, N::Int=10_000)
+    clusters = nothing
+    GC.gc()
+    println("Sampling LAB-space image and generating feature matrix and bands...")
+    seed!(6213)
+    println("Using seed $(seed!(6213))...")
+    X = sampler(paths, N)
     println("Done!")
 
     # Standardize
@@ -474,6 +512,12 @@ end
 
 function train(p::String, ::Sorted; ks=2:12, N::Int=10_000)
     clusters = cluster(p, IsLAB(), ks=ks, N=N)
+    kᵒᵖᵗ = qualities(clusters, Sorted()) |> ksfromquals
+    return (clusters=clusters, kᵒᵖᵗ=kᵒᵖᵗ)
+end
+
+function train(ps::Vector{String}, ::Sorted; ks=2:12, N::Int=300)
+    clusters = cluster(ps, IsLAB(), ks=ks, N=N)
     kᵒᵖᵗ = qualities(clusters, Sorted()) |> ksfromquals
     return (clusters=clusters, kᵒᵖᵗ=kᵒᵖᵗ)
 end

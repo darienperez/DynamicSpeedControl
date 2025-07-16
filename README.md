@@ -7,6 +7,30 @@ In my case it's
 
 rasterpath = "/Users/darien/Desktop/Academia/Research/UAV Applications/Dr. Jacob's Research/Code/Julia/DynamicSpeedControl/data/rasters/processed/ortho_2_20_2021_uncorrected_6348_NAD83_19N.tif"
 
+kfcl1path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/KF-CL-1/2024-25/processed/KF-CL-1_20241203T192440.jpg"
+
+kfcl2path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/KF-CL-1/2024-25/processed/KF-CL-1_20241203T195440.jpg"
+
+kfcl3path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/KF-CL-1/2024-25/processed/KF-CL-1_20241203T202441.jpg"
+
+kfcl4path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/KF-CL-1/2024-25/processed/KF-CL-1_20241203T205440.jpg"
+
+kfcl5path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/KF-CL-1/2024-25/processed/KF-CL-1_20241203T212440.jpg"
+
+kfcl6path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/KF-CL-1/2024-25/processed/KF-CL-1_20241205T115441.jpg"
+
+kfcl7path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/KF-CL-1/2024-25/processed/KF-CL-1_20241205T125440.jpg"
+
+kfcl8path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/KF-CL-1/2024-25/processed/KF-CL-1_20241205T132440.jpg"
+
+kfcl9path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/KF-CL-1/2024-25/processed/KF-CL-1_20241205T135440.jpg"
+
+kfcl10path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/KF-CL-1/2024-25/processed/KF-CL-1_20241205T142440.jpg"
+
+kfcl11path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/KF-CL-1/2024-25/processed/KF-CL-1_20241205T145441.jpg"
+
+kfcl12path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/KF-CL-1/2024-25/processed/KF-CL-1_20241205T152440.jpg"
+
 kf1path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/KF/KF_ortho_MR_2025_01_21.tif"
 
 kf2path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/KF/KF_ortho_MR_2025_02_25.tif"

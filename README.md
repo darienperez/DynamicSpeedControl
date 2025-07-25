@@ -57,6 +57,8 @@ kf12path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Region
 
 kf13path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/KF/KF_ortho_MR_2025_02_19.tif"
 
+kf14path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/Orthos/KF/KF_ortho_MR_2024_12_27.tif"
+
 tf1path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/TF/TF_ortho_P4_2021_02_24_HS.tif"
 
 tf2path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Orthos/TF/TF_ortho_GV_2021_12_21.tif"
@@ -89,4 +91,4 @@ cl1path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions
 
 cl2path = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - Data/4WS3-A (WS3-H-M-M)/2024-25/processed/WS3-H-M-M_20241128T162849.jpg"
 
-outpath = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/kmedoids/outputs/"
+outpath = "/Users/darien/Library/CloudStorage/OneDrive-USNH/UNH BAA Cold Regions - UAV_SCA_FOREST/Masks/kmedoids/outputs/"

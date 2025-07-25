@@ -343,7 +343,8 @@ end
 
 function lengths(results::NamedTuple, cluster::NamedTuple)
     lns = 1:length(cluster.kmedmachs) + 1
-    [length(results.img[results.labels .== l]) for l in lns] ./ 1e6
+    lns = [length(results.img[results.labels .== l]) for l in lns] ./ 1e6
+    lns./sum(lns)
 end
 
 function repair!(img, results, l)
